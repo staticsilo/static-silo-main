@@ -486,18 +486,6 @@ export default function Home() {
           </div>
           <div className="grid gap-8 text-sm sm:grid-cols-2">
             <div>
-              <h2 className="font-semibold text-[#F5F7FA]">Contact</h2>
-              <address className="mt-3 not-italic leading-7 text-[#9BA3AF]">
-                Kuala Terengganu, Terengganu, Malaysia
-                <br />
-                <a className="transition hover:text-white" href="mailto:staticsilo@gmail.com">
-                  staticsilo@gmail.com
-                </a>
-                <br />
-                <span>CT0165206-X</span>
-              </address>
-            </div>
-            <div>
               <h2 className="font-semibold text-[#F5F7FA]">Company</h2>
               <div className="mt-3 flex flex-col gap-2 text-[#9BA3AF]">
                 {navLinks.map((link) => (
