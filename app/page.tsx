@@ -293,7 +293,9 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="/static-silo-company-profile.pdf"
+              href="/company-profile"
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#FF2BD6]/35 bg-[#FF2BD6]/10 px-4 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/55 hover:bg-[#FFD000]/10"
             >
               <span className="hidden sm:inline">Business Card</span>
@@ -474,7 +476,9 @@ export default function Home() {
         </section>
 
         <section id="contact" className="px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <StartProjectCard />
+          <div className="mx-auto max-w-5xl">
+            <StartProjectCard />
+          </div>
         </section>
       </main>
 
@@ -496,6 +500,8 @@ export default function Home() {
                 <a className="transition hover:text-white" href="mailto:staticsilo@gmail.com">
                   staticsilo@gmail.com
                 </a>
+                <br />
+                <span>CT0165206-X</span>
               </address>
             </div>
             <div>
