@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #030405;
+  --foreground: #f5f7fa;
+  --font-sans-stack: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-sans-stack);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans-stack);
+}
+
+@keyframes neon-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes victory-burst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.35);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--victory-x, 0), var(--victory-y, -64px), 0)
+      scale(1.8);
+  }
+}
+
+@keyframes victory-ring {
+  0% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.14);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.35);
+  }
+}
+
+@keyframes victory-badge {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.65);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+}
+
+@keyframes victory-screen-flash {
+  0% {
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.victory-particle {
+  animation: victory-burst 980ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-radius: 9999px;
+  box-shadow: 0 0 20px currentColor, 0 0 42px currentColor;
+  height: 11px;
+  position: absolute;
+  width: 11px;
+}
+
+.victory-ring {
+  animation: victory-ring 1050ms ease-out forwards;
+  border: 2px solid rgba(0, 200, 255, 0.85);
+  border-radius: 9999px;
+  box-shadow: 0 0 28px rgba(0, 200, 255, 0.55),
+    0 0 58px rgba(255, 43, 214, 0.34);
+  height: 160px;
+  position: absolute;
+  width: 160px;
+}
+
+.victory-badge {
+  animation: victory-badge 1450ms ease-out forwards;
+  align-items: center;
+  background: linear-gradient(135deg, #00c8ff, #8a2bff, #ff2bd6, #ffd000);
+  border-radius: 9999px;
+  box-shadow: 0 0 40px rgba(0, 200, 255, 0.46),
+    0 0 80px rgba(255, 43, 214, 0.28);
+  color: #030405;
+  display: flex;
+  font-weight: 800;
+  height: 96px;
+  justify-content: center;
+  position: absolute;
+  white-space: nowrap;
+  width: 190px;
+}
+
+.victory-screen-flash {
+  animation: victory-screen-flash 900ms ease-out forwards;
+  background: radial-gradient(
+      circle at center,
+      rgba(255, 208, 0, 0.34),
+      rgba(255, 43, 214, 0.22) 24%,
+      rgba(0, 200, 255, 0.16) 44%,
+      transparent 70%
+    );
+  inset: 0;
+  position: absolute;
 }
