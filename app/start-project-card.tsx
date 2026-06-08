@@ -1,62 +1,153 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 
 const email = "staticsilo@gmail.com";
 const encodedEmail = encodeURIComponent(email);
 
+type ProviderIconName = "gmail" | "outlook" | "m365" | "yahoo" | "mail";
+
 type EmailProvider = {
   accentClass: string;
-  badge: string;
-  description: string;
   href: string;
+  icon: ProviderIconName;
   launch: "app" | "tab";
   name: string;
+  surfaceClass: string;
 };
 
 const emailProviders: EmailProvider[] = [
   {
-    accentClass: "from-[#00C8FF]/35 via-[#2563FF]/22 to-[#8A2BFF]/30",
-    badge: "G",
-    description: "Open Gmail compose in a new tab.",
+    accentClass: "from-[#EA4335]/35 via-[#FBBC05]/28 to-[#34A853]/35",
     href: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}`,
+    icon: "gmail",
     launch: "tab",
     name: "Gmail",
+    surfaceClass:
+      "bg-[linear-gradient(135deg,rgba(234,67,53,0.22),rgba(251,188,5,0.14),rgba(52,168,83,0.18),rgba(66,133,244,0.24))] border-[#EA4335]/22",
   },
   {
-    accentClass: "from-[#2563FF]/35 via-[#00C8FF]/18 to-[#FFD000]/28",
-    badge: "O",
-    description: "For Outlook, Hotmail, and Live accounts.",
+    accentClass: "from-[#0078D4]/35 via-[#1A8CFF]/24 to-[#65B7FF]/30",
     href: `https://outlook.live.com/mail/0/deeplink/compose?to=${encodedEmail}`,
+    icon: "outlook",
     launch: "tab",
-    name: "Outlook.com",
+    name: "Outlook",
+    surfaceClass:
+      "bg-[linear-gradient(135deg,rgba(0,120,212,0.24),rgba(26,140,255,0.18),rgba(101,183,255,0.24))] border-[#0078D4]/24",
   },
   {
-    accentClass: "from-[#2563FF]/35 via-[#8A2BFF]/18 to-[#FF2BD6]/28",
-    badge: "365",
-    description: "Open Outlook for Microsoft 365 work accounts.",
+    accentClass: "from-[#6559FF]/35 via-[#8A2BFF]/28 to-[#C43AFF]/35",
     href: `https://outlook.office.com/mail/deeplink/compose?to=${encodedEmail}`,
+    icon: "m365",
     launch: "tab",
     name: "Microsoft 365",
+    surfaceClass:
+      "bg-[linear-gradient(135deg,rgba(101,89,255,0.24),rgba(138,43,255,0.16),rgba(196,58,255,0.24))] border-[#8A2BFF]/24",
   },
   {
-    accentClass: "from-[#FFD000]/35 via-[#FF7A00]/18 to-[#FF2BD6]/28",
-    badge: "Y",
-    description: "Compose from Yahoo Mail in a new tab.",
+    accentClass: "from-[#5F01D1]/35 via-[#7B2CFF]/24 to-[#A973FF]/30",
     href: `https://compose.mail.yahoo.com/?to=${encodedEmail}`,
+    icon: "yahoo",
     launch: "tab",
-    name: "Yahoo Mail",
+    name: "Yahoo",
+    surfaceClass:
+      "bg-[linear-gradient(135deg,rgba(95,1,209,0.24),rgba(123,44,255,0.18),rgba(169,115,255,0.24))] border-[#7B2CFF]/24",
   },
   {
-    accentClass: "from-white/24 via-[#00C8FF]/12 to-[#FFD000]/24",
-    badge: "@",
-    description: "Use the email app installed on this device.",
+    accentClass: "from-[#A1A9B6]/30 via-[#D7DDE6]/20 to-[#7B8798]/30",
     href: `mailto:${email}`,
+    icon: "mail",
     launch: "app",
-    name: "Default Email App",
+    name: "Mail App",
+    surfaceClass:
+      "bg-[linear-gradient(135deg,rgba(161,169,182,0.18),rgba(215,221,230,0.12),rgba(123,135,152,0.2))] border-white/[0.14]",
   },
 ];
+
+function ProviderIcon({ icon }: { icon: ProviderIconName }) {
+  if (icon === "gmail") {
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        className="h-7 w-7 overflow-visible"
+      >
+        <path d="M9 34V16l15 11 15-11v18" fill="none" stroke="#EA4335" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M9 16l7 5.4V34H9z" fill="#4285F4" />
+        <path d="M39 16l-7 5.4V34h7z" fill="#34A853" />
+        <path d="M16 21.4V34h16V21.4L24 27z" fill="#FBBC05" opacity="0.96" />
+      </svg>
+    );
+  }
+
+  if (icon === "outlook") {
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        className="h-7 w-7 overflow-visible"
+      >
+        <rect x="8" y="11" width="18" height="26" rx="4" fill="#0A5FD2" />
+        <path d="M24 15h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H24z" fill="#38A0FF" />
+        <path d="M24 18l8 6 8-6" fill="none" stroke="#DDF0FF" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="17" cy="24" r="5.8" fill="none" stroke="#F5FBFF" strokeWidth="3" />
+      </svg>
+    );
+  }
+
+  if (icon === "m365") {
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        className="h-7 w-7 overflow-visible"
+      >
+        <defs>
+          <linearGradient id="m365-gradient" x1="6" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#5B5CFF" />
+            <stop offset="0.55" stopColor="#8A2BFF" />
+            <stop offset="1" stopColor="#D54CFF" />
+          </linearGradient>
+        </defs>
+        <path d="M15 10l12-4 10 7v20l-12 9-10-6z" fill="url(#m365-gradient)" />
+        <path d="M18 16l7-3 6 4v13l-7 5-6-4z" fill="#F6F0FF" opacity="0.14" />
+        <path d="M16.5 19.2L24 15l7 4.2v9.6L24 33l-7.5-4.2z" fill="none" stroke="#F8F4FF" strokeWidth="2.4" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (icon === "yahoo") {
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        className="h-7 w-7 overflow-visible"
+      >
+        <circle cx="24" cy="24" r="18" fill="#7B2CFF" />
+        <path d="M18.2 15h4.7l2.9 6 2.8-6h4.8l-5.6 10.4V33h-4.1v-7.6z" fill="#fff" />
+        <path d="M31.4 33.6h3.1l1.3-10.2h-4.1z" fill="#fff" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+      className="h-7 w-7 overflow-visible"
+    >
+      <rect x="7" y="12" width="34" height="24" rx="6" fill="#D9E2EC" opacity="0.18" />
+      <path d="M11 16l13 10 13-10" fill="none" stroke="#F5F7FA" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M11 32V16h26v16" fill="none" stroke="#F5F7FA" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 async function writeEmailToClipboard() {
   try {
@@ -74,11 +165,28 @@ async function writeEmailToClipboard() {
   }
 }
 
+function StatusPill({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`platform-cloud-entry rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] ${className ?? ""}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function StartProjectCard() {
   const [copied, setCopied] = useState(false);
   const [burstId, setBurstId] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const resetTimeoutRef = useRef<number | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -93,20 +201,24 @@ export default function StartProjectCard() {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-
     function handleEscape(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") {
         setPickerOpen(false);
       }
     }
 
-    document.body.style.overflow = "hidden";
+    function handlePointerDown(event: MouseEvent) {
+      if (!wrapperRef.current?.contains(event.target as Node)) {
+        setPickerOpen(false);
+      }
+    }
+
     window.addEventListener("keydown", handleEscape);
+    window.addEventListener("mousedown", handlePointerDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("mousedown", handlePointerDown);
     };
   }, [pickerOpen]);
 
@@ -160,14 +272,85 @@ export default function StartProjectCard() {
   }
 
   return (
-    <>
+    <div ref={wrapperRef} className="relative mx-auto max-w-5xl">
+      {pickerOpen && (
+        <div
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby="email-platform-title"
+          className="absolute inset-x-4 top-5 z-40 sm:inset-x-8 lg:inset-x-12"
+        >
+          <div className="platform-cloud-panel platform-cloud-entry rounded-[30px] border border-white/[0.1] bg-[#070B10]/96 px-4 py-4 shadow-[0_24px_90px_rgba(0,0,0,0.46),0_0_60px_rgba(0,200,255,0.10)] backdrop-blur-xl sm:px-5">
+            <div className="flex items-center justify-between gap-3">
+              <StatusPill className="border-[#00C8FF]/24 bg-[#0C121A]/95 text-[#00C8FF]">
+                Email Copied
+              </StatusPill>
+              <button
+                type="button"
+                aria-label="Close email app chooser"
+                onClick={() => setPickerOpen(false)}
+                className="platform-cloud-entry inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/45 hover:bg-[#FFD000]/10 [animation-delay:80ms]"
+              >
+                x
+              </button>
+            </div>
+
+            <div className="mt-3 rounded-[24px] border border-white/[0.1] bg-[#0D1117]/94 px-4 py-3 text-center platform-cloud-entry [animation-delay:90ms]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#FFD000]">
+                Choose App
+              </p>
+              <h3
+                id="email-platform-title"
+                className="mt-2 text-lg font-semibold tracking-normal text-[#F5F7FA] sm:text-xl"
+              >
+                Pick the email platform you want
+              </h3>
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-start justify-center gap-3 sm:gap-4">
+              {emailProviders.map((provider, index) => (
+                <button
+                  key={provider.name}
+                  type="button"
+                  title={provider.name}
+                  aria-label={provider.name}
+                  onClick={() => openProvider(provider)}
+                  className="platform-cloud-entry group/provider flex w-[4.9rem] flex-col items-center gap-2 text-center"
+                  style={{ animationDelay: `${160 + index * 70}ms` }}
+                >
+                  <span
+                    className={`relative inline-flex h-[4.6rem] w-[4.6rem] items-center justify-center rounded-full border ${provider.surfaceClass} shadow-[0_18px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 group-hover/provider:-translate-y-1 group-hover/provider:scale-[1.04] group-hover/provider:shadow-[0_22px_44px_rgba(0,0,0,0.38),0_0_30px_rgba(0,200,255,0.14)]`}
+                  >
+                    <span
+                      className={`absolute inset-0 rounded-full bg-gradient-to-br ${provider.accentClass} opacity-0 transition duration-300 group-hover/provider:opacity-100`}
+                    />
+                    <span className="relative inline-flex h-10 w-10 items-center justify-center">
+                      <ProviderIcon icon={provider.icon} />
+                    </span>
+                  </span>
+                  <span className="text-[11px] font-semibold leading-4 text-[#D2D9E3]">
+                    {provider.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-4 flex items-center justify-center">
+              <StatusPill className="border-white/[0.08] bg-[#0B1016]/94 text-[#9BA3AF] [animation-delay:420ms]">
+                Click outside to close
+              </StatusPill>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         role="button"
         tabIndex={0}
         onClick={startProjectFlow}
         onKeyDown={handleKeyDown}
         aria-label={`Copy Static Silo email address and choose an email platform: ${email}`}
-        className="group/cta relative mx-auto max-w-5xl cursor-pointer overflow-hidden rounded-[8px] bg-[linear-gradient(110deg,rgba(0,200,255,0.55),rgba(37,99,255,0.35),rgba(138,43,255,0.45),rgba(255,43,214,0.35),rgba(255,122,0,0.42),rgba(255,208,0,0.45))] p-px shadow-[0_0_48px_rgba(0,200,255,0.12)] transition duration-500 hover:scale-[1.01] hover:shadow-[0_0_58px_rgba(0,200,255,0.26),0_0_94px_rgba(255,43,214,0.18)] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#00C8FF]/70 focus:ring-offset-2 focus:ring-offset-[#030405]"
+        className="group/cta relative cursor-pointer overflow-hidden rounded-[8px] bg-[linear-gradient(110deg,rgba(0,200,255,0.55),rgba(37,99,255,0.35),rgba(138,43,255,0.45),rgba(255,43,214,0.35),rgba(255,122,0,0.42),rgba(255,208,0,0.45))] p-px shadow-[0_0_48px_rgba(0,200,255,0.12)] transition duration-500 hover:scale-[1.01] hover:shadow-[0_0_58px_rgba(0,200,255,0.26),0_0_94px_rgba(255,43,214,0.18)] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#00C8FF]/70 focus:ring-offset-2 focus:ring-offset-[#030405]"
       >
         <span className="pointer-events-none absolute inset-[-40%] bg-[conic-gradient(from_0deg,#00C8FF,#2563FF,#8A2BFF,#FF2BD6,#FF7A00,#FFD000,#00C8FF)] opacity-0 blur-2xl transition duration-500 group-hover/cta:animate-[neon-orbit_5s_linear_infinite] group-hover/cta:opacity-55" />
         <span className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/3 skew-x-[-18deg] bg-white/25 blur-2xl transition-transform duration-700 group-hover/cta:translate-x-[430%]" />
@@ -214,99 +397,11 @@ export default function StartProjectCard() {
               {copied ? "!" : "@"}
             </span>
             <span aria-live="polite">
-              {pickerOpen ? "Choose Platform" : copied ? "Let's Build!" : "Press to Copy"}
+              {pickerOpen ? "Choose App" : copied ? "Let's Build!" : "Press to Copy"}
             </span>
           </div>
         </div>
       </div>
-
-      {pickerOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#030405]/86 px-5 py-6 backdrop-blur-md"
-          onClick={() => setPickerOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="email-platform-title"
-            onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-4xl overflow-hidden rounded-[8px] border border-white/[0.1] bg-[#080B10]/96 shadow-[0_0_80px_rgba(0,0,0,0.45),0_0_52px_rgba(0,200,255,0.08)]"
-          >
-            <div className="border-b border-white/[0.08] px-6 py-5 sm:px-8">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#FFD000]">
-                    Email Options
-                  </p>
-                  <h3
-                    id="email-platform-title"
-                    className="mt-3 text-2xl font-semibold tracking-normal text-[#F5F7FA] sm:text-3xl"
-                  >
-                    Choose your email platform
-                  </h3>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[#9BA3AF] sm:text-base">
-                    The email address is already copied. Pick the service you want to
-                    open and start writing.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPickerOpen(false)}
-                  className="inline-flex h-11 min-w-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.03] px-4 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#00C8FF]/60 hover:bg-white/[0.07]"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-
-            <div className="px-6 py-6 sm:px-8 sm:py-8">
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {emailProviders.map((provider) => (
-                  <button
-                    key={provider.name}
-                    type="button"
-                    onClick={() => openProvider(provider)}
-                    className="group/provider relative overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#0D1117]/85 p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[#00C8FF]/40 hover:bg-[#111822]/95"
-                  >
-                    <span
-                      className={`absolute inset-0 bg-gradient-to-br ${provider.accentClass} opacity-0 transition duration-300 group-hover/provider:opacity-100`}
-                    />
-                    <div className="relative">
-                      <div className="flex items-start justify-between gap-4">
-                        <span className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-white/[0.12] bg-[#030405]/80 px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#F5F7FA]">
-                          {provider.badge}
-                        </span>
-                        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9BA3AF] transition group-hover/provider:text-[#F5F7FA]">
-                          Open
-                        </span>
-                      </div>
-                      <h4 className="mt-5 text-lg font-semibold text-[#F5F7FA]">
-                        {provider.name}
-                      </h4>
-                      <p className="mt-2 text-sm leading-6 text-[#9BA3AF] transition group-hover/provider:text-[#D3D9E2]">
-                        {provider.description}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-6 flex flex-col gap-3 border-t border-white/[0.08] pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-[#9BA3AF]">
-                  Press outside this panel or hit Escape to close it.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setPickerOpen(false)}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.03] px-5 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/45 hover:bg-[#FFD000]/10"
-                >
-                  Stay on Site
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
