@@ -5,6 +5,7 @@ import type { KeyboardEvent, ReactNode } from "react";
 
 const email = "staticsilo@gmail.com";
 const encodedEmail = encodeURIComponent(email);
+const pickerRevealDelayMs = 720;
 
 type ProviderIconName = "gmail" | "outlook" | "m365" | "yahoo" | "mail";
 
@@ -186,12 +187,17 @@ export default function StartProjectCard() {
   const [burstId, setBurstId] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const resetTimeoutRef = useRef<number | null>(null);
+  const pickerRevealTimeoutRef = useRef<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
       if (resetTimeoutRef.current) {
         window.clearTimeout(resetTimeoutRef.current);
+      }
+
+      if (pickerRevealTimeoutRef.current) {
+        window.clearTimeout(pickerRevealTimeoutRef.current);
       }
     };
   }, []);
@@ -230,7 +236,18 @@ export default function StartProjectCard() {
     resetTimeoutRef.current = window.setTimeout(() => {
       setCopied(false);
       resetTimeoutRef.current = null;
-    }, 1900);
+    }, 980);
+  }
+
+  function schedulePickerReveal() {
+    if (pickerRevealTimeoutRef.current) {
+      window.clearTimeout(pickerRevealTimeoutRef.current);
+    }
+
+    pickerRevealTimeoutRef.current = window.setTimeout(() => {
+      setPickerOpen(true);
+      pickerRevealTimeoutRef.current = null;
+    }, pickerRevealDelayMs);
   }
 
   function triggerVictory() {
@@ -241,9 +258,10 @@ export default function StartProjectCard() {
 
   async function startProjectFlow() {
     const clipboardWrite = writeEmailToClipboard();
-    setPickerOpen(true);
+    setPickerOpen(false);
     await clipboardWrite;
     triggerVictory();
+    schedulePickerReveal();
   }
 
   function openProvider(provider: EmailProvider) {
