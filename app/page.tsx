@@ -1,4 +1,5 @@
 import Image from "next/image";
+import BusinessCardButton from "./business-card-button";
 import StartProjectCard from "./start-project-card";
 
 const navLinks = [
@@ -292,15 +293,7 @@ export default function Home() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <a
-              href="/company-profile"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#FF2BD6]/35 bg-[#FF2BD6]/10 px-4 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/55 hover:bg-[#FFD000]/10"
-            >
-              <span className="hidden sm:inline">Business Card</span>
-              <span className="sm:hidden">PDF</span>
-            </a>
+            <BusinessCardButton />
             <a
               href="#contact"
               className="hidden min-h-10 items-center justify-center rounded-full border border-[#00C8FF]/40 bg-[#00C8FF]/10 px-5 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/50 hover:bg-[#FFD000]/10 lg:inline-flex"

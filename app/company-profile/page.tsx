@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import PrintTrigger from "./print-trigger";
 
 export const metadata: Metadata = {
   title: "Static Silo",
@@ -19,8 +18,6 @@ const serviceTags = [
 export default function CompanyProfile() {
   return (
     <main className="min-h-screen bg-[#030405] p-5 text-[#F5F7FA] print:min-h-0 print:p-0">
-      <PrintTrigger />
-
       <style>{`
         @page {
           size: 90mm 54mm;
