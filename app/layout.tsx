@@ -25,10 +25,14 @@ export const metadata: Metadata = {
   title: "Static Silo",
   description:
     "Static Silo is an independent game studio from Malaysia. Our first game, Fathomless Maw, is a dark isometric action RPG coming to PC, with Android and iOS in development.",
+  // The studio's own mark (the silo and its eye) in the tab; the Fathomless Maw seal stays on the game's art.
   icons: {
-    icon: "/brand/seal-icon.png",
-    shortcut: "/brand/seal-icon.png",
-    apple: "/brand/seal-icon.png",
+    icon: [
+      { url: "/brand/silo-icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/silo-icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: { url: "/brand/silo-apple-icon.png", sizes: "180x180" },
   },
 };
 
