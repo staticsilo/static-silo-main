@@ -7,3 +7,6 @@ export const FEEDBACK_EMAIL = "staticsilo@gmail.com";
 // host) overrides it. If it is ever emptied the form opens the visitor's own mail app instead.
 export const WEB3FORMS_KEY =
   process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "712b6395-35b7-4357-8d1f-4e88d0a50c2e";
+
+// Where supporters can donate.
+export const KOFI_URL = "https://ko-fi.com/staticsilo";

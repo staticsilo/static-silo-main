@@ -1,6 +1,7 @@
 import Image from "next/image";
 import FeedbackDialog from "./feedback-form";
 import GameDetails from "./game-details";
+import { KOFI_URL } from "./site-config";
 import StartProjectCard from "./start-project-card";
 
 const navLinks = [
@@ -137,6 +138,20 @@ export default function Home() {
               </a>
             ))}
           </div>
+          <a
+            href={KOFI_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap border border-ember/50 px-4 font-display text-xs font-semibold uppercase tracking-[0.18em] text-ember transition hover:border-eye/70 hover:text-eye"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M4 9h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" />
+              <path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16" />
+              <path d="M8 5.5c0 .8-.8.8-.8 1.6M11 5.5c0 .8-.8.8-.8 1.6" />
+            </svg>
+            <span className="sm:hidden">Donate</span>
+            <span className="hidden sm:inline">Support on Ko-fi</span>
+          </a>
         </nav>
       </header>
 
