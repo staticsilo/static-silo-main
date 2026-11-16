@@ -196,8 +196,8 @@ export default function Home() {
             <div className="plate relative overflow-hidden p-3">
               <div className="relative aspect-square overflow-hidden">
                 <Image
-                  src="/brand/skull-game.webp"
-                  alt="Key art: a horned skull with burning amber eyes before a blood-red sun"
+                  src="/brand/seal-game.webp"
+                  alt="Fathomless Maw seal: a black-iron ring of spikes and tentacles around a maw of fangs falling into fire"
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="ember-glow object-cover"

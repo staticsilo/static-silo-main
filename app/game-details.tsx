@@ -340,7 +340,7 @@ export default function GameDetails() {
           {/* Banner */}
           <div className="relative h-44 overflow-hidden border-b border-parchment/10 sm:h-56">
             <Image
-              src="/brand/skull-game.webp"
+              src="/brand/seal-game.webp"
               alt=""
               fill
               sizes="(min-width: 1024px) 1024px, 100vw"
