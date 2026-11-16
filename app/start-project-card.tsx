@@ -175,7 +175,7 @@ function StatusPill({
 }) {
   return (
     <div
-      className={`platform-cloud-entry rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] ${className ?? ""}`}
+      className={`platform-cloud-entry border px-4 py-2 font-type text-[11px] uppercase tracking-[0.26em] ${className ?? ""}`}
     >
       {children}
     </div>
@@ -298,28 +298,28 @@ export default function StartProjectCard() {
           aria-labelledby="email-platform-title"
           className="absolute inset-x-4 top-5 z-40 sm:inset-x-8 lg:inset-x-12"
         >
-          <div className="platform-cloud-panel platform-cloud-entry rounded-[30px] border border-white/[0.1] bg-[#070B10]/96 px-4 py-4 shadow-[0_24px_90px_rgba(0,0,0,0.46),0_0_60px_rgba(0,200,255,0.10)] backdrop-blur-xl sm:px-5">
+          <div className="plate platform-cloud-entry bg-ink/95 px-4 py-4 backdrop-blur-xl sm:px-5">
             <div className="flex items-center justify-between gap-3">
-              <StatusPill className="border-[#00C8FF]/24 bg-[#0C121A]/95 text-[#00C8FF]">
+              <StatusPill className="border-eye/40 bg-ink-2 text-eye">
                 Email Copied
               </StatusPill>
               <button
                 type="button"
                 aria-label="Close email app chooser"
                 onClick={() => setPickerOpen(false)}
-                className="platform-cloud-entry inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/45 hover:bg-[#FFD000]/10 [animation-delay:80ms]"
+                className="platform-cloud-entry inline-flex h-10 w-10 items-center justify-center border border-sepia/40 font-display text-sm font-semibold text-parchment transition hover:border-eye/70 hover:text-eye [animation-delay:80ms]"
               >
                 x
               </button>
             </div>
 
-            <div className="mt-3 rounded-[24px] border border-white/[0.1] bg-[#0D1117]/94 px-4 py-3 text-center platform-cloud-entry [animation-delay:90ms]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#FFD000]">
+            <div className="mt-3 border-y border-parchment/10 px-4 py-3 text-center platform-cloud-entry [animation-delay:90ms]">
+              <p className="font-type text-[11px] uppercase tracking-[0.3em] text-ember">
                 Choose App
               </p>
               <h3
                 id="email-platform-title"
-                className="mt-2 text-lg font-semibold tracking-normal text-[#F5F7FA] sm:text-xl"
+                className="mt-2 font-display text-lg font-semibold tracking-wide text-parchment sm:text-xl"
               >
                 Pick the email platform you want
               </h3>
@@ -337,7 +337,7 @@ export default function StartProjectCard() {
                   style={{ animationDelay: `${160 + index * 70}ms` }}
                 >
                   <span
-                    className={`relative inline-flex h-[4.6rem] w-[4.6rem] items-center justify-center rounded-full border ${provider.surfaceClass} shadow-[0_18px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 group-hover/provider:-translate-y-1 group-hover/provider:scale-[1.04] group-hover/provider:shadow-[0_22px_44px_rgba(0,0,0,0.38),0_0_30px_rgba(0,200,255,0.14)]`}
+                    className={`relative inline-flex h-[4.6rem] w-[4.6rem] items-center justify-center rounded-full border ${provider.surfaceClass} shadow-[0_18px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 group-hover/provider:-translate-y-1 group-hover/provider:scale-[1.04] group-hover/provider:shadow-[0_22px_44px_rgba(0,0,0,0.38),0_0_30px_rgba(226,238,108,0.18)]`}
                   >
                     <span
                       className={`absolute inset-0 rounded-full bg-gradient-to-br ${provider.accentClass} opacity-0 transition duration-300 group-hover/provider:opacity-100`}
@@ -346,7 +346,7 @@ export default function StartProjectCard() {
                       <ProviderIcon icon={provider.icon} />
                     </span>
                   </span>
-                  <span className="text-[11px] font-semibold leading-4 text-[#D2D9E3]">
+                  <span className="font-type text-[11px] leading-4 text-sepia">
                     {provider.name}
                   </span>
                 </button>
@@ -354,7 +354,7 @@ export default function StartProjectCard() {
             </div>
 
             <div className="mt-4 flex items-center justify-center">
-              <StatusPill className="border-white/[0.08] bg-[#0B1016]/94 text-[#9BA3AF] [animation-delay:420ms]">
+              <StatusPill className="border-parchment/10 bg-ink-2 text-muted [animation-delay:420ms]">
                 Click outside to close
               </StatusPill>
             </div>
@@ -368,10 +368,10 @@ export default function StartProjectCard() {
         onClick={startProjectFlow}
         onKeyDown={handleKeyDown}
         aria-label={`Copy Static Silo email address and choose an email platform: ${email}`}
-        className="group/cta relative cursor-pointer overflow-hidden rounded-[8px] bg-[linear-gradient(110deg,rgba(0,200,255,0.55),rgba(37,99,255,0.35),rgba(138,43,255,0.45),rgba(255,43,214,0.35),rgba(255,122,0,0.42),rgba(255,208,0,0.45))] p-px shadow-[0_0_48px_rgba(0,200,255,0.12)] transition duration-500 hover:scale-[1.01] hover:shadow-[0_0_58px_rgba(0,200,255,0.26),0_0_94px_rgba(255,43,214,0.18)] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#00C8FF]/70 focus:ring-offset-2 focus:ring-offset-[#030405]"
+        className="plate group/cta relative cursor-pointer overflow-hidden p-2 transition duration-500 hover:border-eye/40 hover:shadow-[inset_0_0_0_4px_#13110d,inset_0_0_0_5px_rgba(226,238,108,0.25),0_0_70px_rgba(226,238,108,0.12)] active:scale-[0.995] focus:outline-none focus-visible:ring-2 focus-visible:ring-eye/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
-        <span className="pointer-events-none absolute inset-[-40%] bg-[conic-gradient(from_0deg,#00C8FF,#2563FF,#8A2BFF,#FF2BD6,#FF7A00,#FFD000,#00C8FF)] opacity-0 blur-2xl transition duration-500 group-hover/cta:animate-[neon-orbit_5s_linear_infinite] group-hover/cta:opacity-55" />
-        <span className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/3 skew-x-[-18deg] bg-white/25 blur-2xl transition-transform duration-700 group-hover/cta:translate-x-[430%]" />
+        <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(226,238,108,0.12),transparent_65%)] opacity-0 transition duration-500 group-hover/cta:opacity-100" />
+        <span className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/3 skew-x-[-18deg] bg-parchment/10 blur-2xl transition-transform duration-700 group-hover/cta:translate-x-[430%]" />
 
         {copied && (
           <span key={burstId} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
@@ -379,43 +379,43 @@ export default function StartProjectCard() {
             <span className="victory-ring left-1/2 top-1/2" />
             <span className="victory-ring left-1/2 top-1/2 [animation-delay:160ms]" />
             <span className="victory-badge left-1/2 top-1/2">
-              <span className="text-xl sm:text-2xl">{"Let's Build!"}</span>
+              <span className="text-lg sm:text-xl">{"Signal Sent"}</span>
             </span>
-            <span className="victory-particle left-[10%] top-[18%] bg-[#00C8FF] [--victory-x:-46px] [--victory-y:-52px]" />
-            <span className="victory-particle left-[18%] top-[78%] bg-[#2563FF] [--victory-x:-58px] [--victory-y:46px] [animation-delay:45ms]" />
-            <span className="victory-particle left-[30%] top-[20%] bg-[#8A2BFF] [--victory-x:-24px] [--victory-y:-70px] [animation-delay:80ms]" />
-            <span className="victory-particle left-[44%] top-[82%] bg-[#FF2BD6] [--victory-x:-18px] [--victory-y:66px] [animation-delay:120ms]" />
-            <span className="victory-particle left-[58%] top-[16%] bg-[#FFD000] [--victory-x:20px] [--victory-y:-72px] [animation-delay:150ms]" />
-            <span className="victory-particle left-[70%] top-[78%] bg-[#FF7A00] [--victory-x:44px] [--victory-y:58px] [animation-delay:190ms]" />
-            <span className="victory-particle left-[84%] top-[24%] bg-[#FFD000] [--victory-x:62px] [--victory-y:-38px] [animation-delay:230ms]" />
-            <span className="victory-particle left-[92%] top-[64%] bg-[#00C8FF] [--victory-x:70px] [--victory-y:30px] [animation-delay:270ms]" />
+            <span className="victory-particle left-[10%] top-[18%] bg-eye [--victory-x:-46px] [--victory-y:-52px]" />
+            <span className="victory-particle left-[18%] top-[78%] bg-ember [--victory-x:-58px] [--victory-y:46px] [animation-delay:45ms]" />
+            <span className="victory-particle left-[30%] top-[20%] bg-parchment [--victory-x:-24px] [--victory-y:-70px] [animation-delay:80ms]" />
+            <span className="victory-particle left-[44%] top-[82%] bg-blood [--victory-x:-18px] [--victory-y:66px] [animation-delay:120ms]" />
+            <span className="victory-particle left-[58%] top-[16%] bg-eye [--victory-x:20px] [--victory-y:-72px] [animation-delay:150ms]" />
+            <span className="victory-particle left-[70%] top-[78%] bg-ember [--victory-x:44px] [--victory-y:58px] [animation-delay:190ms]" />
+            <span className="victory-particle left-[84%] top-[24%] bg-parchment [--victory-x:62px] [--victory-y:-38px] [animation-delay:230ms]" />
+            <span className="victory-particle left-[92%] top-[64%] bg-eye [--victory-x:70px] [--victory-y:30px] [animation-delay:270ms]" />
           </span>
         )}
 
-        <div className="relative rounded-[7px] bg-[#080B10]/95 px-6 py-10 text-center backdrop-blur-xl sm:px-10 lg:px-16 lg:py-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#FFD000]">
-            Start a Project
+        <div className="hatch relative border border-parchment/10 px-6 py-12 text-center sm:px-10 lg:px-16 lg:py-16">
+          <p className="font-type text-xs uppercase tracking-[0.34em] text-ember">
+            Get in Touch
           </p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-normal text-[#F5F7FA] sm:text-5xl">
-            Build the software and automation your operations need next.
+          <h2 className="mt-5 font-display text-3xl font-semibold leading-tight tracking-wide text-parchment sm:text-5xl">
+            Send word to the silo.
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#9BA3AF]">
-            Share the business challenge, the software idea, and the outcome you need.
-            Static Silo will help shape the technical path forward.
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-sepia">
+            Players, press, publishers, or fellow developers — if you want news about the
+            game or just want to say hello, Static Silo is listening.
           </p>
-          <div className="mx-auto mt-8 inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.16] bg-[#030405]/80 px-6 text-sm font-semibold text-[#F5F7FA] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 group-hover/cta:border-[#00C8FF]/70 group-hover/cta:shadow-[0_0_34px_rgba(0,200,255,0.24)]">
+          <div className="mx-auto mt-9 inline-flex min-h-12 items-center justify-center border border-parchment/40 bg-ink px-7 font-display text-xs font-semibold uppercase tracking-[0.24em] text-parchment transition duration-300 group-hover/cta:border-eye/70 group-hover/cta:text-eye group-hover/cta:shadow-[0_0_34px_rgba(226,238,108,0.2)]">
             <span
               className={`mr-2 grid h-5 w-5 place-items-center rounded-full border text-[8px] transition duration-300 ${
                 copied
-                  ? "border-[#FFD000] bg-[#FFD000] text-[#030405]"
-                  : "border-[#00C8FF]/70 bg-[#00C8FF]/10 text-[#00C8FF]"
+                  ? "border-eye bg-eye text-ink"
+                  : "border-eye/70 bg-eye/10 text-eye"
               }`}
               aria-hidden="true"
             >
               {copied ? "!" : "@"}
             </span>
             <span aria-live="polite">
-              {pickerOpen ? "Choose App" : copied ? "Let's Build!" : "Press to Copy"}
+              {pickerOpen ? "Choose App" : copied ? "Signal Sent" : "Copy Our Email"}
             </span>
           </div>
         </div>

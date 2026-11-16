@@ -58,7 +58,7 @@ export default function BusinessCardButton() {
       <button
         type="button"
         onClick={handleAction}
-        className={`inline-flex min-h-10 items-center justify-center rounded-full border border-[#FF2BD6]/35 bg-[#FF2BD6]/10 px-4 text-sm font-semibold text-[#F5F7FA] transition hover:border-[#FFD000]/55 hover:bg-[#FFD000]/10 ${
+        className={`inline-flex min-h-10 whitespace-nowrap items-center justify-center border border-ember/40 bg-ember/5 px-4 font-display text-xs font-semibold uppercase tracking-[0.18em] text-parchment transition hover:border-eye/70 hover:text-eye ${
           isReady ? "" : "opacity-70"
         }`}
       >
