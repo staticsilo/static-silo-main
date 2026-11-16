@@ -1,5 +1,4 @@
 import Image from "next/image";
-import BusinessCardButton from "./business-card-button";
 import FeedbackDialog from "./feedback-form";
 import GameDetails from "./game-details";
 import StartProjectCard from "./start-project-card";
@@ -138,7 +137,6 @@ export default function Home() {
               </a>
             ))}
           </div>
-          <BusinessCardButton />
         </nav>
       </header>
 
