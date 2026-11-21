@@ -106,16 +106,29 @@ type GalleryShot = {
 
 const latestShots: GalleryShot[] = [
   {
+    src: "/game/talent-tree.webp",
+    animation: "/game/talent-tree-cold-wake.gif",
+    title: "One connected talent tree",
+    caption: "Pan and pinch to explore. Follow the lit path to Cold Wake, pick it, and see how its next rank improves the skill.",
+    portrait: true,
+  },
+  {
     src: "/game/venomfrost-barrage.webp",
     animation: "/game/venomfrost-barrage.gif",
     title: "Venomfrost Barrage",
     caption: "Frost, Plague and Volley combine into a rain of venom-tipped arrows in the Rotwood.",
   },
   {
-    src: "/game/talent-tree.webp",
-    title: "One connected talent tree",
-    caption: "Explore 19 schools from the Crossroads, then follow a school into mastery or climb toward Pinnacle.",
-    portrait: true,
+    src: "/game/morvath-hellrain.webp",
+    animation: "/game/morvath-hellrain.gif",
+    title: "Dodging Hellrain",
+    caption: "Morvath marks the cathedral floor before Hellrain falls. Dash out as the impacts close in.",
+  },
+  {
+    src: "/game/charged-javelin.webp",
+    animation: "/game/charged-javelin.gif",
+    title: "Charged Javelin",
+    caption: "Lightning and Spears work together as the hero fights through the Drowned Marsh.",
   },
   {
     src: "/game/cold-wake.webp",
@@ -204,7 +217,7 @@ function Gallery() {
               onClick={() => setPlaying((value) => !value)}
               className="absolute bottom-3 right-3 min-h-10 cursor-pointer border border-parchment/30 bg-ink/90 px-3 font-display text-sm text-parchment transition hover:border-eye/70 hover:text-eye"
             >
-              {playing ? "Stop gameplay loop" : "Play gameplay loop"}
+              {playing ? "Stop loop" : "Play loop"}
             </button>
           )}
           <button
@@ -243,7 +256,7 @@ function Gallery() {
               setPlaying(false);
               setIndex(i);
             }}
-            aria-label={`Show ${s.title}`}
+            aria-label={`Show ${s.title}${s.animation ? " (animated preview)" : ""}`}
             aria-current={i === index}
             className={`relative aspect-video w-28 shrink-0 snap-center cursor-pointer overflow-hidden border transition sm:w-32 ${
               i === index
@@ -252,6 +265,11 @@ function Gallery() {
             }`}
           >
             <Image src={s.src} alt="" fill sizes="128px" className={s.portrait ? "object-contain" : "object-cover"} />
+            {s.animation && (
+              <span aria-hidden="true" className="absolute bottom-1 right-1 bg-ink/90 px-1.5 text-xs leading-5 text-parchment">
+                ▶
+              </span>
+            )}
           </button>
         ))}
       </div>
