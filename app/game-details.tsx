@@ -96,13 +96,64 @@ const systems = [
   },
 ];
 
+type GalleryShot = {
+  src: string;
+  title: string;
+  caption: string;
+  portrait?: boolean;
+  animation?: string;
+};
+
+const latestShots: GalleryShot[] = [
+  {
+    src: "/game/venomfrost-barrage.webp",
+    animation: "/game/venomfrost-barrage.gif",
+    title: "Venomfrost Barrage",
+    caption: "Frost, Plague and Volley combine into a rain of venom-tipped arrows in the Rotwood.",
+  },
+  {
+    src: "/game/talent-tree.webp",
+    title: "One connected talent tree",
+    caption: "Explore 19 schools from the Crossroads, then follow a school into mastery or climb toward Pinnacle.",
+    portrait: true,
+  },
+  {
+    src: "/game/cold-wake.webp",
+    title: "Cold Wake",
+    caption: "Dash through an ice trail to shatter enemies. Each rank shows what the next point changes.",
+    portrait: true,
+  },
+  {
+    src: "/game/ordered-combo.webp",
+    title: "The order shapes your combo",
+    caption: "The tree tracks the order you learn schools and reveals the resulting ability.",
+    portrait: true,
+  },
+  {
+    src: "/game/pinnacle-path.webp",
+    title: "The Pinnacle path",
+    caption: "After Morvath falls, five choices from levels 96–100 deepen your build.",
+    portrait: true,
+  },
+  {
+    src: "/game/morvath-duel.webp",
+    title: "Morvath, the Undying King",
+    caption: "A scythe-wielding hero closes in as Morvath brings his throne room to life.",
+  },
+];
+
 // Fights and systems interleaved, so the gallery alternates action and depth.
-const gallery = shots.flatMap((s, i) => (systems[i] ? [s, systems[i]] : [s]));
+const gallery: GalleryShot[] = [...latestShots, ...shots.flatMap((s, i) => (systems[i] ? [s, systems[i]] : [s]))];
 
 function Gallery() {
   const [index, setIndex] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const shot = gallery[index];
-  const step = (d: number) => setIndex((i) => (i + d + gallery.length) % gallery.length);
+  const source = (playing && shot.animation) || shot.src;
+  const step = (d: number) => {
+    setPlaying(false);
+    setIndex((i) => (i + d + gallery.length) % gallery.length);
+  };
   const stripRef = useRef<HTMLDivElement>(null);
 
   // Keep the current thumbnail in the middle of the strip as the arrows move past the edge.
@@ -136,15 +187,26 @@ function Gallery() {
       <Heading>From the depths</Heading>
       <Rule />
       <div className="plate mt-6 p-2">
-        <div className="relative aspect-video overflow-hidden bg-black">
+        <div className={`relative overflow-hidden bg-black ${shot.portrait ? "h-[min(68vh,680px)] min-h-[310px]" : "aspect-video"}`}>
           <Image
-            key={shot.src}
-            src={shot.src}
+            key={source}
+            src={source}
             alt={`${shot.title}: ${shot.caption}`}
             fill
             sizes="(min-width: 1024px) 960px, 100vw"
-            className="gallery-fade object-contain"
+            unoptimized={playing}
+            className="gallery-fade object-contain motion-reduce:animate-none"
           />
+          {shot.animation && (
+            <button
+              type="button"
+              aria-pressed={playing}
+              onClick={() => setPlaying((value) => !value)}
+              className="absolute bottom-3 right-3 min-h-10 cursor-pointer border border-parchment/30 bg-ink/90 px-3 font-display text-sm text-parchment transition hover:border-eye/70 hover:text-eye"
+            >
+              {playing ? "Stop gameplay loop" : "Play gameplay loop"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => step(-1)}
@@ -177,7 +239,10 @@ function Gallery() {
           <button
             key={s.src}
             type="button"
-            onClick={() => setIndex(i)}
+            onClick={() => {
+              setPlaying(false);
+              setIndex(i);
+            }}
             aria-label={`Show ${s.title}`}
             aria-current={i === index}
             className={`relative aspect-video w-28 shrink-0 snap-center cursor-pointer overflow-hidden border transition sm:w-32 ${
@@ -186,12 +251,12 @@ function Gallery() {
                 : "border-parchment/15 opacity-55 hover:opacity-90"
             }`}
           >
-            <Image src={s.src} alt="" fill sizes="128px" className="object-cover" />
+            <Image src={s.src} alt="" fill sizes="128px" className={s.portrait ? "object-contain" : "object-cover"} />
           </button>
         ))}
       </div>
       <p className="mt-2 font-type text-[10px] uppercase tracking-[0.24em] text-muted">
-        In-game screenshots · PC · work in progress
+        In-game screenshots and gameplay · work in progress
       </p>
     </section>
   );
@@ -252,9 +317,9 @@ const schools = [
 
 const features = [
   {
-    title: "Build from the cards",
+    title: "Build from the Crossroads",
     description:
-      "Every level-up deals you a hand of cards. Pick your abilities from 19 schools of slaughter, then master up to three of them.",
+      "Explore 19 schools on one talent map. Your first three schools shape an ordered attack, and ranked mastery lets you deepen your choices. Level-up cards add smaller bonuses along the way.",
   },
   {
     title: "Loot worth the dark",
