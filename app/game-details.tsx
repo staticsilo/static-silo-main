@@ -106,6 +106,12 @@ type GalleryShot = {
 
 const latestShots: GalleryShot[] = [
   {
+    src: "/game/venomfrost-from-tree.webp",
+    animation: "/game/venomfrost-from-tree.gif",
+    title: "Build Venomfrost Barrage",
+    caption: "Pick Frost, then Plague, then Volley. Watch the revealed combo send a Frost Orb into the pack, spread venom, and rain down arrows.",
+  },
+  {
     src: "/game/talent-tree.webp",
     animation: "/game/talent-tree-cold-wake.gif",
     title: "One connected talent tree",
