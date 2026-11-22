@@ -102,6 +102,7 @@ type GalleryShot = {
   caption: string;
   portrait?: boolean;
   animation?: string;
+  autoplay?: boolean;
 };
 
 const latestShots: GalleryShot[] = [
@@ -121,6 +122,7 @@ const latestShots: GalleryShot[] = [
   {
     src: "/game/level-up-cards.webp",
     animation: "/game/level-up-sacrifice.gif",
+    autoplay: true,
     title: "Level-up cards and Sacrifice",
     caption: "Pick one of three bonuses or burn the whole hand to improve your next roll. Keep your talent point either way. At 100%, choose between Stolen Omen and Grave Tithe.",
   },
@@ -175,10 +177,14 @@ function Gallery() {
   const [playing, setPlaying] = useState(false);
   const shot = gallery[index];
   const source = (playing && shot.animation) || shot.src;
-  const step = (d: number) => {
-    setPlaying(false);
-    setIndex((i) => (i + d + gallery.length) % gallery.length);
+  const selectShot = (nextIndex: number) => {
+    setIndex(nextIndex);
+    setPlaying(
+      gallery[nextIndex].autoplay === true &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
   };
+  const step = (direction: number) => selectShot((index + direction + gallery.length) % gallery.length);
   const stripRef = useRef<HTMLDivElement>(null);
 
   // Keep the current thumbnail in the middle of the strip as the arrows move past the edge.
@@ -264,10 +270,7 @@ function Gallery() {
           <button
             key={s.src}
             type="button"
-            onClick={() => {
-              setPlaying(false);
-              setIndex(i);
-            }}
+            onClick={() => selectShot(i)}
             aria-label={`Show ${s.title}${s.animation ? " (animated preview)" : ""}`}
             aria-current={i === index}
             className={`relative aspect-video w-28 shrink-0 snap-center cursor-pointer overflow-hidden border transition sm:w-32 ${
