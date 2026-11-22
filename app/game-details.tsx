@@ -102,7 +102,6 @@ type GalleryShot = {
   caption: string;
   portrait?: boolean;
   animation?: string;
-  autoplay?: boolean;
 };
 
 const latestShots: GalleryShot[] = [
@@ -122,7 +121,6 @@ const latestShots: GalleryShot[] = [
   {
     src: "/game/level-up-cards.webp",
     animation: "/game/level-up-sacrifice.gif",
-    autoplay: true,
     title: "Level-up cards and Sacrifice",
     caption: "Pick one of three bonuses or burn the whole hand to improve your next roll. Keep your talent point either way. At 100%, choose between Stolen Omen and Grave Tithe.",
   },
@@ -174,17 +172,11 @@ const gallery: GalleryShot[] = [...latestShots, ...shots.flatMap((s, i) => (syst
 
 function Gallery() {
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
   const shot = gallery[index];
-  const source = (playing && shot.animation) || shot.src;
-  const selectShot = (nextIndex: number) => {
-    setIndex(nextIndex);
-    setPlaying(
-      gallery[nextIndex].autoplay === true &&
-        !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    );
+  const source = shot.animation ?? shot.src;
+  const step = (direction: number) => {
+    setIndex((current) => (current + direction + gallery.length) % gallery.length);
   };
-  const step = (direction: number) => selectShot((index + direction + gallery.length) % gallery.length);
   const stripRef = useRef<HTMLDivElement>(null);
 
   // Keep the current thumbnail in the middle of the strip as the arrows move past the edge.
@@ -225,19 +217,9 @@ function Gallery() {
             alt={`${shot.title}: ${shot.caption}`}
             fill
             sizes="(min-width: 1024px) 960px, 100vw"
-            unoptimized={playing}
+            unoptimized={Boolean(shot.animation)}
             className="gallery-fade object-contain motion-reduce:animate-none"
           />
-          {shot.animation && (
-            <button
-              type="button"
-              aria-pressed={playing}
-              onClick={() => setPlaying((value) => !value)}
-              className="absolute bottom-3 right-3 min-h-10 cursor-pointer border border-parchment/30 bg-ink/90 px-3 font-display text-sm text-parchment transition hover:border-eye/70 hover:text-eye"
-            >
-              {playing ? "Stop loop" : "Play loop"}
-            </button>
-          )}
           <button
             type="button"
             onClick={() => step(-1)}
@@ -270,7 +252,7 @@ function Gallery() {
           <button
             key={s.src}
             type="button"
-            onClick={() => selectShot(i)}
+            onClick={() => setIndex(i)}
             aria-label={`Show ${s.title}${s.animation ? " (animated preview)" : ""}`}
             aria-current={i === index}
             className={`relative aspect-video w-28 shrink-0 snap-center cursor-pointer overflow-hidden border transition sm:w-32 ${
