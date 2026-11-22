@@ -119,6 +119,12 @@ const latestShots: GalleryShot[] = [
     portrait: true,
   },
   {
+    src: "/game/level-up-cards.webp",
+    animation: "/game/level-up-sacrifice.gif",
+    title: "Level-up cards and Sacrifice",
+    caption: "Pick one of three bonuses or burn the whole hand to improve your next roll. Keep your talent point either way. At 100%, choose between Stolen Omen and Grave Tithe.",
+  },
+  {
     src: "/game/venomfrost-barrage.webp",
     animation: "/game/venomfrost-barrage.gif",
     title: "Venomfrost Barrage",
