@@ -210,7 +210,7 @@ function Gallery() {
       <Heading>From the depths</Heading>
       <Rule />
       <div className="plate mt-6 p-2">
-        <div className={`relative overflow-hidden bg-black ${shot.portrait ? "h-[min(68vh,680px)] min-h-[310px]" : "aspect-video"}`}>
+        <div className="relative aspect-square overflow-hidden bg-black sm:aspect-video">
           <Image
             key={source}
             src={source}
