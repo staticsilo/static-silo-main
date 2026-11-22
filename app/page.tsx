@@ -1,6 +1,7 @@
 import Image from "next/image";
 import FeedbackDialog from "./feedback-form";
 import GameDetails from "./game-details";
+import MawStats from "./maw-stats";
 import { KOFI_URL } from "./site-config";
 import StartProjectCard from "./start-project-card";
 
@@ -274,6 +275,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          <MawStats configured={Boolean(process.env.MAW_STATS_SHEET_ID && process.env.MAW_STATS_GOOGLE_CREDENTIALS && (process.env.MAW_STATS_DASHBOARD_CODE?.length ?? 0) >= 32)} />
         </section>
 
         {/* ---------- Studio ---------- */}
