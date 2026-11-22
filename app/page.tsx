@@ -12,9 +12,9 @@ const navLinks = [
 
 const pillars = [
   {
-    title: "Hand-etched art",
+    title: "Etched visual style",
     description:
-      "Every frame is drawn to feel like an old engraving — ink lines, sepia stains, and light that has to fight its way through.",
+      "Ink lines, sepia stains, and narrow pools of light give the world the look of an old engraving.",
   },
   {
     title: "Atmosphere first",
@@ -24,7 +24,7 @@ const pillars = [
   {
     title: "Small & independent",
     description:
-      "A tiny studio from Kuala Terengganu, Malaysia, making the games we want to play — on our own terms.",
+      "An independent studio in Malaysia, building a horror universe one game at a time.",
   },
 ];
 
@@ -193,7 +193,7 @@ export default function Home() {
               <span className="logo-rule flex-1" />
             </div>
             <p className="mt-7 max-w-2xl text-xl italic leading-8 text-parchment/90 sm:text-2xl sm:leading-9">
-              Dark, hand-etched games about what waits beneath the surface. Our first is Fathomless Maw.
+              Dark games with an etched look, about what waits beneath the surface. Our first is Fathomless Maw.
             </p>
             <div className="mt-10 flex w-full flex-col justify-center gap-5 sm:w-auto sm:flex-row">
               <InkButton href="#game">Discover Fathomless Maw</InkButton>
@@ -313,12 +313,24 @@ export default function Home() {
                 The studio
               </p>
               <h2 className="mt-5 font-display text-3xl font-semibold leading-tight tracking-wide text-parchment sm:text-4xl lg:text-5xl">
-                A lonely silo, a watchful eye, and stories worth fearing.
+                An engineer building a horror universe.
               </h2>
               <p className="mt-6 text-lg leading-8 text-sepia">
-                Static Silo is an independent game studio from Kuala Terengganu, Malaysia.
-                We make games with a hand-drawn, slightly haunted heart — worlds etched in
-                ink, lit by whatever is staring back.
+                I&apos;m an engineer from Malaysia and the founder of Static Silo. I had no experience
+                making art when I started. I was working a job I&apos;d grown to hate, and the low pay
+                made it hard to see a future there. I&apos;d dreamed of making a horror game for years.
+                Starting the studio gave me a reason to finally try.
+              </p>
+              <p className="mt-4 text-lg leading-8 text-sepia">
+                I brought my engineering habits with me. I break a problem down, build something
+                I can test, and keep refining it. That&apos;s how I found the game&apos;s visual style
+                and got the combat and character builds to feel the way I wanted.
+              </p>
+              <p className="mt-4 text-lg leading-8 text-sepia">
+                Fathomless Maw is the first game in the horror universe I want to build. It brings
+                together the dread and mystery of a horror story and the freedom of an action RPG.
+                What you find changes how you fight, and every descent reveals a little more about
+                what happened down there.
               </p>
             </div>
           </div>
@@ -357,7 +369,7 @@ export default function Home() {
           <div>
             <LogoLockup />
             <p className="mt-5 max-w-md text-base leading-7 text-sepia">
-              An independent game studio from Kuala Terengganu, Malaysia.
+              An independent game studio from Malaysia.
             </p>
           </div>
           <div>
