@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   try {
     const historyDays = new URL(request.url).searchParams.get("history") === "90" ? 90 : 14;
-    const { totals } = summarize(await readActivity(), statsDay(), historyDays);
+    const { totals } = summarize(await readActivity(true), statsDay(), historyDays);
     return Response.json(totals, { headers: privateHeaders });
   } catch {
     return Response.json({ message: "The archive is temporarily unavailable." }, { status: 503, headers: privateHeaders });
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     return new Response(null, { status: 415 });
   }
 
-  const maxBytes = 8_192;
+  const maxBytes = 32_768;
   if (Number(request.headers.get("content-length")) > maxBytes) return new Response(null, { status: 413 });
   const reader = request.body?.getReader();
   if (!reader) return new Response(null, { status: 400 });

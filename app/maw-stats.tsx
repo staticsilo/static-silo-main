@@ -3,6 +3,7 @@
 import { type FormEvent, useRef, useState } from "react";
 import type { DailyStats, StatsSummary } from "./maw-stats-model";
 import TrendChart, { chartDate } from "./stats/trend-chart";
+import PlaytestChoices from "./maw-playtest-choices";
 
 const number = new Intl.NumberFormat("en-MY");
 const compact = new Intl.NumberFormat("en-MY", { notation: "compact", maximumFractionDigits: 1 });
@@ -191,6 +192,19 @@ export default function MawStats({ configured }: { configured: boolean }) {
     ]);
   }
 
+  function exportChoices(summary: StatsSummary) {
+    const choices = summary.choices;
+    downloadCsv("maw-choices-" + summary.date + ".csv", [
+      ["Category", "Gameplay ID", "Label", "Measure", "Count"],
+      ...([
+        ["Talent purchase", choices.skills], ["School order", choices.schools], ["Card hand", choices.hands],
+        ["Sacrifice", choices.sacrifices], ["Progression", choices.progression],
+      ] as const).flatMap(([category, rows]) => rows.map(({ id, label, count }) => [category, id, label, "Occurrences", count])),
+      ...choices.cards.flatMap(({ id, label, offered, picked }) => [["Card", id, label, "Offered", offered], ["Card", id, label, "Picked", picked]]),
+      ...choices.bosses.flatMap(({ id, label, attempts, clears }) => [["Boss", id, label, "Attempts", attempts], ["Boss", id, label, "Clears", clears]]),
+    ]);
+  }
+
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -247,6 +261,7 @@ export default function MawStats({ configured }: { configured: boolean }) {
         <Bars title="Progression" description="Share of all opted-in installations reaching each milestone" items={milestones} total={stats.installs} />
         <Bars title="Platforms" description="All-time installations by platform" items={platforms} total={stats.installs} />
       </div>
+      <PlaytestChoices choices={stats.choices} exportChoices={() => exportChoices(stats)} />
     </>
   );
 }

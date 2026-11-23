@@ -73,20 +73,23 @@ async function sheets<T>(operation: SheetsOperation, path: string, method: "GET"
   }
 }
 
-async function sheetTitles() {
-  const spreadsheet = await sheets<{ sheets?: { properties?: { title?: string } }[] }>("list-tabs", "?fields=sheets(properties(title))");
-  return new Set(spreadsheet.sheets?.map((sheet) => sheet.properties?.title));
+type SheetInfo = { title: string; sheetId: number; gridProperties: { columnCount: number } };
+
+async function sheetInfo() {
+  const spreadsheet = await sheets<{ sheets?: { properties: SheetInfo }[] }>(
+    "list-tabs", "?fields=sheets(properties(title,sheetId,gridProperties(columnCount)))",
+  );
+  return new Map(spreadsheet.sheets?.map(({ properties }) => [properties.title, properties]));
 }
 
 async function createMissingTabs() {
-  const existing = await sheetTitles();
+  const existing = await sheetInfo();
   const definitions = [
     { title: activityTab, header: activityHead },
     { title: archiveTab, header: archiveHead },
   ].filter((tab) => !existing.has(tab.title));
-  if (!definitions.length) return;
 
-  const requests = definitions.flatMap(({ title, header }) => {
+  const requests: object[] = definitions.flatMap(({ title, header }) => {
     const sheetId = randomInt(1, 900_000_000);
     return [
       { addSheet: { properties: { title, sheetId, gridProperties: { columnCount: header.length, rowCount: 1000, frozenRowCount: 1 } } } },
@@ -97,11 +100,26 @@ async function createMissingTabs() {
       } },
     ];
   });
+  // Existing six-column Activity tabs gain a column in place. Earlier rows remain readable.
+  const activity = existing.get(activityTab);
+  if (activity && activity.gridProperties.columnCount < activityHead.length) {
+    const { sheetId } = activity;
+    requests.push(
+      { updateSheetProperties: { properties: { sheetId, gridProperties: { columnCount: activityHead.length } }, fields: "gridProperties.columnCount" } },
+      { updateCells: {
+        start: { sheetId, rowIndex: 0, columnIndex: activityHead.length - 1 },
+        rows: [{ values: [{ userEnteredValue: { stringValue: activityHead.at(-1) } }] }],
+        fields: "userEnteredValue",
+      } },
+    );
+  }
+  if (!requests.length) return;
+
   try {
     await sheets("create-tabs", ":batchUpdate", "POST", { requests });
   } catch (error) {
-    const current = await sheetTitles();
-    if (definitions.some(({ title }) => !current.has(title))) throw error;
+    const current = await sheetInfo();
+    if (!current.has(archiveTab) || (current.get(activityTab)?.gridProperties.columnCount ?? 0) < activityHead.length) throw error;
   }
 }
 
@@ -115,13 +133,13 @@ function ensureTabs() {
 
 export async function appendActivity(values: string[][]) {
   await ensureTabs();
-  const range = encodeURIComponent(activityTab + "!A:F");
+  const range = encodeURIComponent(activityTab + "!A:G");
   await sheets("append-activity", "/values/" + range + ":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS", "POST", { values });
 }
 
-export async function readActivity() {
+export async function readActivity(includeChoices = false) {
   await ensureTabs();
-  const range = encodeURIComponent(activityTab + "!A2:F");
+  const range = encodeURIComponent(activityTab + (includeChoices ? "!A2:G" : "!A2:F"));
   const data = await sheets<{ values?: unknown[][] }>("read-activity", "/values/" + range + "?valueRenderOption=UNFORMATTED_VALUE");
   return data.values ?? [];
 }

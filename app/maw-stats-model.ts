@@ -1,3 +1,5 @@
+import { parseChoices, readChoices, summarizeChoices, type ChoiceSnapshot, type ChoiceSummary } from "./maw-choices";
+
 const milestones = [
   "intro_completed",
   "first_level_up",
@@ -15,6 +17,7 @@ type Activity = {
   platform: Platform;
   build: string;
   milestones: Milestone[];
+  choices?: ChoiceSnapshot | null;
 };
 
 type Retention = { returned: number; eligible: number };
@@ -41,6 +44,7 @@ export type StatsSummary = {
   pick: number;
   sacrifice: number;
   daily: DailyStats[];
+  choices: ChoiceSummary;
 };
 
 const dayMilliseconds = 86_400_000;
@@ -84,7 +88,7 @@ function asActivity(
   return { install: install.toLowerCase(), firstDay, platform, build, day, milestones: [...new Set(flags)] };
 }
 
-export const activityHead = ["Played on (MYT)", "Install ID", "First played (MYT)", "Platform", "Build", "Milestones"];
+export const activityHead = ["Played on (MYT)", "Install ID", "First played (MYT)", "Platform", "Build", "Milestones", "Choice counters"];
 export const archiveHead = [
   "Play date (MYT)", "Active installations", "New installations",
   "D1 eligible", "D1 returned", "D7 eligible", "D7 returned", "Archived on (MYT)",
@@ -102,6 +106,7 @@ export function parseActivity(body: unknown, today: string): Activity[] | null {
       data.installationId, data.firstDay, data.platform, data.build, item.date, item.milestones ?? [], today,
     );
     if (!row) return null;
+    row.choices = parseChoices(item.choices);
     rows.push(row);
   }
   return rows;
@@ -110,6 +115,7 @@ export function parseActivity(body: unknown, today: string): Activity[] | null {
 export function activityValues(activity: Activity[]) {
   return activity.map((row) => [
     row.day, row.install, row.firstDay, row.platform, row.build, row.milestones.join(","),
+    row.choices ? JSON.stringify(row.choices) : "",
   ]);
 }
 
@@ -122,11 +128,17 @@ export function summarize(values: unknown[][], today: string, historyDays: 14 | 
     firstReward?: { day: string; kind: Milestone };
   }>();
 
-  for (const [day, install, first, platform, build, flags] of values) {
+  const latestChoices = new Map<string, ChoiceSnapshot>();
+  for (const [day, install, first, platform, build, flags, choices] of values) {
     const row = asActivity(
       install, first, platform, build, day, typeof flags === "string" && flags ? flags.split(",") : [], today,
     );
     if (!row) continue;
+    const snapshot = readChoices(choices);
+    if (snapshot) {
+      const key = row.install + ":" + row.day;
+      if (snapshot.revision > (latestChoices.get(key)?.revision ?? 0)) latestChoices.set(key, snapshot);
+    }
 
     let history = people.get(row.install);
     if (!history) {
@@ -148,6 +160,7 @@ export function summarize(values: unknown[][], today: string, historyDays: 14 | 
     date: today, installs: people.size, activeToday: 0, activeSevenDays: 0,
     day1: { returned: 0, eligible: 0 }, day7: { returned: 0, eligible: 0 },
     windows: 0, android: 0, intro: 0, levelUp: 0, boss: 0, pick: 0, sacrifice: 0, daily: [],
+    choices: summarizeChoices(latestChoices.values()),
   };
   const byDay = new Map<string, DailyStats>();
   const daily = (date: string) => {
