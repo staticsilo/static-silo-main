@@ -113,7 +113,7 @@ export function activityValues(activity: Activity[]) {
   ]);
 }
 
-export function summarize(values: unknown[][], today: string) {
+export function summarize(values: unknown[][], today: string, historyDays: 14 | 90 = 14) {
   const people = new Map<string, {
     first: string;
     platform: Platform;
@@ -191,7 +191,7 @@ export function summarize(values: unknown[][], today: string) {
     totals.day7.eligible += day.day7.eligible;
     totals.day7.returned += day.day7.returned;
   }
-  totals.daily = Array.from({ length: 14 }, (_, index) => daily(dayAt(today, index - 13)));
+  totals.daily = Array.from({ length: historyDays }, (_, index) => daily(dayAt(today, index - historyDays + 1)));
   return {
     totals,
     completedDays: Array.from(byDay.values()).filter((day) => day.date < today)

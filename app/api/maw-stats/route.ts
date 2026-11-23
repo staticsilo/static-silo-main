@@ -13,7 +13,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { totals } = summarize(await readActivity(), statsDay());
+    const historyDays = new URL(request.url).searchParams.get("history") === "90" ? 90 : 14;
+    const { totals } = summarize(await readActivity(), statsDay(), historyDays);
     return Response.json(totals, { headers: privateHeaders });
   } catch {
     return Response.json({ message: "The archive is temporarily unavailable." }, { status: 503, headers: privateHeaders });
