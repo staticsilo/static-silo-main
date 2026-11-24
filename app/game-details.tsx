@@ -276,9 +276,9 @@ const features = [
       "Bring as many heroes as you like to the bonfire at Ashwater Camp. Swear one to iron and its death is forever.",
   },
   {
-    title: "PC, then phones",
+    title: "Coming soon to PC",
     description:
-      "Fathomless Maw is coming to PC. Android and iOS versions are in development, built for one hand with a fixed stick, a double-tap dash and touch-sized windows.",
+      "Android and iOS will follow, with a fixed stick, a double-tap dash and touch-sized menus built for one-handed play.",
   },
 ];
 

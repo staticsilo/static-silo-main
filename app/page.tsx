@@ -33,8 +33,8 @@ const roman = ["I", "II", "III"];
 
 const gameFacts = [
   { k: "Genre", v: "Isometric action RPG" },
-  { k: "Releasing on", v: "PC" },
-  { k: "In development", v: "Android & iOS" },
+  { k: "Coming to", v: "PC" },
+  { k: "To follow", v: "Android & iOS" },
 ];
 
 function SiloMark({ className = "h-10 w-10" }: Readonly<{ className?: string }>) {
@@ -221,7 +221,7 @@ export default function Home() {
                 <StaticBars />
               </div>
               <span className="absolute left-6 top-6 border border-blood/70 bg-ink/80 px-3 py-1.5 font-type text-[10px] uppercase tracking-[0.3em] text-ember">
-                Fathomless Maw · In development
+                Fathomless Maw · Coming soon
               </span>
             </div>
 
@@ -268,6 +268,9 @@ export default function Home() {
 
               <div className="mt-10 flex flex-col flex-wrap gap-5 sm:flex-row">
                 <GameDetails />
+                <InkButton href="https://static-silo.itch.io/fathomless-maw" variant="secondary">
+                  View on itch.io
+                </InkButton>
                 <InkButton href="#contact" variant="secondary">
                   Get Updates
                 </InkButton>

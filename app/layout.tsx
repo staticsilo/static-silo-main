@@ -24,7 +24,7 @@ const type = Special_Elite({
 export const metadata: Metadata = {
   title: "Static Silo",
   description:
-    "Static Silo is an independent game studio from Malaysia. Our first game, Fathomless Maw, is a dark isometric action RPG coming to PC, with Android and iOS in development.",
+    "Static Silo is an independent game studio from Malaysia. Our first game, Fathomless Maw, is a dark isometric action RPG coming soon to PC. Android and iOS will follow.",
   // The studio's own mark (the silo and its eye) in the tab; the Fathomless Maw seal stays on the game's art.
   icons: {
     icon: [
