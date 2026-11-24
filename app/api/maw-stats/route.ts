@@ -1,5 +1,5 @@
-import { activityValues, parseActivity, statsDay, summarize } from "../../maw-stats-model";
-import { appendActivity, checkCode, readActivity, statsConfigured, upstreamLimited } from "../../maw-stats-storage";
+import { activityValues, installsFirstSeen, parseActivity, statsDay, summarize } from "../../maw-stats-model";
+import { appendActivity, checkCode, readActivity, removeInstallations, statsConfigured, upstreamLimited } from "../../maw-stats-storage";
 
 const privateHeaders = { "Cache-Control": "private, no-store" };
 
@@ -39,6 +39,41 @@ export async function GET(request: Request) {
     const historyDays = new URL(request.url).searchParams.get("history") === "90" ? 90 : 14;
     const { totals } = summarize(await readActivity(true), statsDay(), historyDays);
     return Response.json(totals, { headers: privateHeaders });
+  } catch {
+    return Response.json({ message: "The archive is temporarily unavailable." }, { status: 503, headers: privateHeaders });
+  }
+}
+
+/**
+ * Owner only (the dashboard code): deletes fake installations, by id ({"ids": [...]}) or every one first seen on a day
+ * ({"firstDay": "YYYY-MM-DD"}, for a flood). The rows are deleted from the sheet; there is no undo but the sheet's version history.
+ */
+export async function DELETE(request: Request) {
+  const code = process.env.MAW_STATS_DASHBOARD_CODE ?? "";
+  if (!statsConfigured() || code.length < 32) return Response.json({ message: "The private dashboard is awaiting setup." }, { status: 503, headers: privateHeaders });
+  if (!checkCode(request, code)) return Response.json({ message: "That access code didn’t match." }, { status: 401, headers: privateHeaders });
+
+  let body: { ids?: unknown; firstDay?: unknown };
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ message: "Send ids or firstDay." }, { status: 400, headers: privateHeaders });
+  }
+  const ids = new Set<string>();
+  if (Array.isArray(body.ids)) {
+    if (body.ids.length > 1000 || !body.ids.every((id) => typeof id === "string" && /^[0-9a-f]{32}$/i.test(id))) {
+      return Response.json({ message: "Installation ids are 32 hexadecimal characters (at most 1000 at once)." }, { status: 400, headers: privateHeaders });
+    }
+    for (const id of body.ids as string[]) ids.add(id.toLowerCase());
+  }
+  try {
+    if (typeof body.firstDay === "string") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(body.firstDay)) return Response.json({ message: "firstDay is YYYY-MM-DD." }, { status: 400, headers: privateHeaders });
+      for (const id of installsFirstSeen(await readActivity(), body.firstDay, statsDay())) ids.add(id);
+    }
+    if (!ids.size) return Response.json({ removedInstallations: 0, removedRows: 0 }, { headers: privateHeaders });
+    const removedRows = await removeInstallations(ids);
+    return Response.json({ removedInstallations: ids.size, removedRows }, { headers: privateHeaders });
   } catch {
     return Response.json({ message: "The archive is temporarily unavailable." }, { status: 503, headers: privateHeaders });
   }

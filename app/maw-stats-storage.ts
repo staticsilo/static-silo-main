@@ -161,21 +161,31 @@ export async function writeDailyArchive(days: DailyStats[], today: string) {
  * Returns how many rows were removed.
  */
 export async function compactActivity(today: string) {
+  return rewriteActivity((rows) => compactRows(rows, today));
+}
+
+/** Deletes every activity row of these installations (fake ones from a flood). Returns how many rows went. */
+export async function removeInstallations(ids: Set<string>) {
+  return rewriteActivity((rows) => rows.filter((cells) => !(typeof cells[1] === "string" && ids.has(cells[1].toLowerCase()))));
+}
+
+/** Rewrites the activity tab with fewer rows (see compactActivity for why this is safe while uploads keep arriving). */
+async function rewriteActivity(keep: (rows: unknown[][]) => unknown[][]) {
   await ensureTabs();
   const rows = await readActivity(true);
-  const compacted = compactRows(rows, today).map((cells) => Array.from({ length: activityHead.length }, (_, i) => cells[i] ?? ""));
-  if (compacted.length >= rows.length) return 0;
+  const kept = keep(rows).map((cells) => Array.from({ length: activityHead.length }, (_, i) => cells[i] ?? ""));
+  if (kept.length >= rows.length) return 0;
   const sheetId = (await sheetInfo()).get(activityTab)?.sheetId;
   if (sheetId === undefined) return 0;
-  if (compacted.length) {
-    const range = encodeURIComponent("'" + activityTab + "'!A2:G" + (compacted.length + 1));
-    await sheets("compact-activity", "/values/" + range + "?valueInputOption=RAW", "PUT", { values: compacted });
+  if (kept.length) {
+    const range = encodeURIComponent("'" + activityTab + "'!A2:G" + (kept.length + 1));
+    await sheets("compact-activity", "/values/" + range + "?valueInputOption=RAW", "PUT", { values: kept });
   }
   // Delete (not just clear) the rows left over: a cleared row still counts toward the spreadsheet's cell limit.
   await sheets("trim-activity", ":batchUpdate", "POST", { requests: [{ deleteDimension: {
-    range: { sheetId, dimension: "ROWS", startIndex: compacted.length + 1, endIndex: rows.length + 1 },
+    range: { sheetId, dimension: "ROWS", startIndex: kept.length + 1, endIndex: rows.length + 1 },
   } }] });
-  return rows.length - compacted.length;
+  return rows.length - kept.length;
 }
 
 function errorCause(error: unknown) {

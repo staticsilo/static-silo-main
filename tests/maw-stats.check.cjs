@@ -122,6 +122,22 @@ check("catalog has the mastery nodes the game sends", Object.keys(catalog.skills
   check("the sacrifice-first reward order survives", after.sacrifice === 1 && after.pick === 0, JSON.stringify({ pick: after.pick, sacrifice: after.sacrifice }));
 }
 
+// --- Removing fake installations: finding them, and the list the dashboard shows
+{
+  const [A, B, C] = [31, 32, 33].map(id);
+  const rows = [
+    row("2026-11-10", A, "2026-11-10"), row("2026-11-12", A, "2026-11-10"),
+    row("2026-11-12", B, "2026-11-12"), row("2026-11-12", C, "2026-11-12"), row("2026-11-13", C, "2026-11-14"),
+  ];
+  const flood = m.installsFirstSeen(rows, "2026-11-12", today).sort();
+  check("installations first seen on a day are found (and only those)", JSON.stringify(flood) === JSON.stringify([B, C].sort()), JSON.stringify(flood));
+  check("an installation whose first day is earlier is not caught by a later day", !m.installsFirstSeen(rows, "2026-11-12", today).includes(A));
+  const list = m.summarize(rows, today).totals.installations;
+  const a = list.find((x) => x.id === A);
+  check("the installation list has first, last and days", a && a.first === "2026-11-10" && a.last === "2026-11-12" && a.days === 2, JSON.stringify(a));
+  check("the list is newest-seen first", list[0].id === C && list[0].last === "2026-11-13", JSON.stringify(list[0]));
+}
+
 // --- Size: the largest day the game can send fits the 32 KB limit
 {
   const len = ("skill:" + Object.keys(catalog.skills).sort((a, b) => b.length - a.length)[0] + "@5").length;

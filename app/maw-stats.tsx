@@ -4,6 +4,7 @@ import { type FormEvent, useRef, useState } from "react";
 import type { DailyStats, StatsSummary } from "./maw-stats-model";
 import TrendChart, { chartDate } from "./stats/trend-chart";
 import PlaytestChoices from "./maw-playtest-choices";
+import MawInstallations from "./maw-installations";
 
 const number = new Intl.NumberFormat("en-MY");
 const compact = new Intl.NumberFormat("en-MY", { notation: "compact", maximumFractionDigits: 1 });
@@ -262,6 +263,7 @@ export default function MawStats({ configured }: { configured: boolean }) {
         <Bars title="Platforms" description="All-time installations by platform" items={platforms} total={stats.installs} />
       </div>
       <PlaytestChoices choices={stats.choices} exportChoices={() => exportChoices(stats)} />
+      <MawInstallations installations={stats.installations ?? []} code={code} onChanged={() => loadStats(code)} />
     </>
   );
 }

@@ -45,7 +45,12 @@ export type StatsSummary = {
   sacrifice: number;
   daily: DailyStats[];
   choices: ChoiceSummary;
+  /** The most recently seen installations (for spotting and removing fake ones). */
+  installations: Installation[];
 };
+
+export type Installation = { id: string; first: string; last: string; platform: Platform; days: number };
+const listedInstallations = 200;
 
 const dayMilliseconds = 86_400_000;
 const malaysiaDate = new Intl.DateTimeFormat("en-CA", {
@@ -164,6 +169,16 @@ export function compactRows(values: unknown[][], today: string): unknown[][] {
   return out;
 }
 
+/** Every installation whose first play day is `day` (a flood of fake ones usually arrives on one day). */
+export function installsFirstSeen(values: unknown[][], day: string, today: string) {
+  const first = new Map<string, string>();
+  for (const [d, install, f, platform, build, flags] of values) {
+    const row = asActivity(install, f, platform, build, d, typeof flags === "string" && flags ? flags.split(",") : [], today);
+    if (row && (!first.has(row.install) || row.firstDay < first.get(row.install)!)) first.set(row.install, row.firstDay);
+  }
+  return [...first].filter(([, f]) => f === day).map(([id]) => id);
+}
+
 export function summarize(values: unknown[][], today: string, historyDays: 14 | 90 = 14) {
   const people = new Map<string, {
     first: string;
@@ -206,6 +221,11 @@ export function summarize(values: unknown[][], today: string, historyDays: 14 | 
     day1: { returned: 0, eligible: 0 }, day7: { returned: 0, eligible: 0 },
     windows: 0, android: 0, intro: 0, levelUp: 0, boss: 0, pick: 0, sacrifice: 0, daily: [],
     choices: summarizeChoices(latestChoices.values()),
+    installations: [...people].map(([id, history]) => ({
+      id, first: history.first, platform: history.platform, days: history.days.size,
+      last: [...history.days].reduce((a, b) => (b > a ? b : a), history.first),
+    })).sort((a, b) => b.last.localeCompare(a.last) || b.first.localeCompare(a.first) || a.id.localeCompare(b.id))
+      .slice(0, listedInstallations),
   };
   const byDay = new Map<string, DailyStats>();
   const daily = (date: string) => {
