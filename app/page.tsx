@@ -1,7 +1,6 @@
 import Image from "next/image";
 import FeedbackDialog from "./feedback-form";
 import GameDetails from "./game-details";
-import Link from "next/link";
 import { KOFI_URL } from "./site-config";
 import StartProjectCard from "./start-project-card";
 
@@ -278,13 +277,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <section id="stats" aria-labelledby="maw-stats-title" className="mx-auto mt-16 hidden max-w-7xl scroll-mt-24 border-t border-parchment/15 pt-10 target:block">
-            <h3 id="maw-stats-title" className="font-display text-2xl font-semibold text-parchment">Fathomless Maw Statistics</h3>
-            <p className="mt-2 text-sepia">Private player activity, retention and playtest exports.</p>
-            <Link href="/stats" className="mt-4 inline-flex min-h-11 items-center gap-2 border border-ember/50 bg-ink-2 px-4 font-display text-xs font-semibold text-parchment hover:border-eye hover:text-eye">
-              Open dashboard <span aria-hidden="true">→</span>
-            </Link>
-          </section>
         </section>
 
         {/* ---------- Studio ---------- */}
