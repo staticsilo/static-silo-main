@@ -3,6 +3,29 @@ import { appendActivity, checkCode, readActivity, statsConfigured, upstreamLimit
 
 const privateHeaders = { "Cache-Control": "private, no-store" };
 
+// Uploads are anonymous, so anyone can post. An honest game sends about one request every 5 minutes, and at most 24 in a row when
+// it catches up after being offline; 60 per 10 minutes per address leaves room for a household or a phone carrier sharing one.
+// This lives in the function instance (Vercel reuses instances, but not across regions or cold starts): it stops a script from one
+// address filling the sheet; a spread-out attack needs a rate-limit rule in the Vercel firewall on /api/maw-stats.
+const limitWindowMs = 10 * 60_000;
+const limitPerAddress = 60;
+const recent = new Map<string, { start: number; count: number }>();
+
+function overLimit(request: Request, now = Date.now()) {
+  const address = request.headers.get("x-real-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (recent.size > 20_000) {
+    for (const [key, entry] of recent) if (now - entry.start >= limitWindowMs) recent.delete(key);
+    if (recent.size > 20_000) recent.clear();
+  }
+  const entry = recent.get(address);
+  if (!entry || now - entry.start >= limitWindowMs) {
+    recent.set(address, { start: now, count: 1 });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > limitPerAddress;
+}
+
 export async function GET(request: Request) {
   const code = process.env.MAW_STATS_DASHBOARD_CODE ?? "";
   if (!statsConfigured() || code.length < 32) {
@@ -23,6 +46,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   if (!statsConfigured()) return new Response(null, { status: 503 });
+  if (overLimit(request)) return new Response(null, { status: 429, headers: { "Retry-After": "600" } });
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
     return new Response(null, { status: 415 });
   }

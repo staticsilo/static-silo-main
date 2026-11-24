@@ -32,9 +32,10 @@ function splitChoice(key: string) {
   return [key.slice(0, separator), key.slice(separator + 1)];
 }
 
-function knownList(ids: string, group: Record<string, string>) {
+// A school order never repeats a school, but a reward hand often holds two or three copies of one card (the game repeats a card on purpose).
+function knownList(ids: string, group: Record<string, string>, repeats = false) {
   const members = ids.split("+");
-  return members.length <= 3 && new Set(members).size === members.length &&
+  return members.length <= 3 && (repeats || new Set(members).size === members.length) &&
     members.every((id) => catalogName(group, id));
 }
 
@@ -48,7 +49,7 @@ function validKey(key: string) {
       return Boolean(extra === undefined && validRank && catalogName(skills, node));
     }
     case "school": return knownList(id, schools);
-    case "hand": return knownList(id, cards) && [...id.split("+")].sort().join("+") === id;
+    case "hand": return knownList(id, cards, true) && [...id.split("+")].sort().join("+") === id;
     case "pick": return Boolean(catalogName(cards, id));
     case "sacrifice": return odds.has(id);
     case "intro": return id === "completed" || id === "skipped";

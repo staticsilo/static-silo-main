@@ -1,12 +1,12 @@
 import { createHash, randomInt, timingSafeEqual } from "node:crypto";
 import { GoogleAuth } from "google-auth-library";
-import { activityHead, archiveHead, type DailyStats } from "./maw-stats-model";
+import { activityHead, archiveHead, compactRows, type DailyStats } from "./maw-stats-model";
 
 const activityTab = "Activity";
 const archiveTab = "Daily archive";
 const sheetEndpoint = "https://sheets.googleapis.com/v4/spreadsheets/";
 
-type SheetsOperation = "list-tabs" | "create-tabs" | "append-activity" | "read-activity" | "write-archive";
+type SheetsOperation = "list-tabs" | "create-tabs" | "append-activity" | "read-activity" | "write-archive" | "compact-activity" | "trim-activity";
 type SheetsStage = "credentials" | "auth-client" | SheetsOperation;
 
 class SheetsRequestError extends Error {
@@ -154,6 +154,30 @@ export async function writeDailyArchive(days: DailyStats[], today: string) {
   await sheets("write-archive", "/values/" + range + "?valueInputOption=RAW", "PUT", { values });
 }
 
+/**
+ * One row per installation-day (see compactRows), so the dashboard's read and the sheet's cell count grow with play days, not with sends.
+ * Safe while the game keeps posting: an append always lands after the last row present when it runs, which is past every row this
+ * rewrites (rows 2..n+1) and every row it deletes (n+2..m+1, all read here first), so a row sent meanwhile is neither overwritten nor deleted.
+ * Returns how many rows were removed.
+ */
+export async function compactActivity(today: string) {
+  await ensureTabs();
+  const rows = await readActivity(true);
+  const compacted = compactRows(rows, today).map((cells) => Array.from({ length: activityHead.length }, (_, i) => cells[i] ?? ""));
+  if (compacted.length >= rows.length) return 0;
+  const sheetId = (await sheetInfo()).get(activityTab)?.sheetId;
+  if (sheetId === undefined) return 0;
+  if (compacted.length) {
+    const range = encodeURIComponent("'" + activityTab + "'!A2:G" + (compacted.length + 1));
+    await sheets("compact-activity", "/values/" + range + "?valueInputOption=RAW", "PUT", { values: compacted });
+  }
+  // Delete (not just clear) the rows left over: a cleared row still counts toward the spreadsheet's cell limit.
+  await sheets("trim-activity", ":batchUpdate", "POST", { requests: [{ deleteDimension: {
+    range: { sheetId, dimension: "ROWS", startIndex: compacted.length + 1, endIndex: rows.length + 1 },
+  } }] });
+  return rows.length - compacted.length;
+}
+
 function errorCause(error: unknown) {
   return error instanceof SheetsRequestError ? error.cause : error;
 }
@@ -166,7 +190,7 @@ export function upstreamLimited(error: unknown) {
   return asUpstreamError(errorCause(error))?.response?.status === 429;
 }
 
-export function archiveErrorDetails(error: unknown, archiveStage: "read-activity" | "summarize" | "write-archive") {
+export function archiveErrorDetails(error: unknown, archiveStage: "read-activity" | "summarize" | "write-archive" | "compact-activity") {
   const cause = errorCause(error);
   const upstream = asUpstreamError(cause);
   const status = upstream?.response?.status;

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // compiled by `npm run test:stats`
+    ".stats-test/**",
   ]),
 ]);
 

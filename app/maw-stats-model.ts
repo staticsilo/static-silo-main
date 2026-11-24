@@ -68,24 +68,28 @@ function dateString(value: unknown): value is string {
     Number.isFinite(Date.parse(value)) && dayAt(value, 0) === value;
 }
 
-function milestoneList(value: unknown): value is Milestone[] {
-  return Array.isArray(value) && value.length <= milestones.length &&
-    value.every((item) => milestones.includes(item));
+// Milestones this site does not know yet (the game added one before the site was deployed) are ignored, not refused: refusing them
+// refused the whole day, and the game retried that day ahead of every newer one.
+function milestoneList(value: unknown): Milestone[] | null {
+  if (!Array.isArray(value) || value.length > 32) return null;
+  return value.filter((item): item is Milestone => milestones.includes(item));
 }
 
 function asActivity(
   install: unknown, firstDay: unknown, platform: unknown, build: unknown,
   day: unknown, flags: unknown, today: string,
 ): Activity | null {
+  const known = milestoneList(flags);
   if (typeof install !== "string" || !/^[0-9a-f]{32}$/i.test(install) ||
     (platform !== "windows" && platform !== "android") ||
     typeof build !== "string" || !/^[0-9A-Za-z._-]{1,24}$/.test(build) ||
-    !dateString(firstDay) || !dateString(day) || day < firstDay || day > today ||
-    !milestoneList(flags)) {
+    !dateString(firstDay) || !dateString(day) || day > today || !known) {
     return null;
   }
 
-  return { install: install.toLowerCase(), firstDay, platform, build, day, milestones: [...new Set(flags)] };
+  // A device clock that was set ahead on the first play leaves a first day later than real play days: the play day is the truth.
+  const first = day < firstDay ? day : firstDay;
+  return { install: install.toLowerCase(), firstDay: first, platform, build, day, milestones: [...new Set(known)] };
 }
 
 export const activityHead = ["Played on (MYT)", "Install ID", "First played (MYT)", "Platform", "Build", "Milestones", "Choice counters"];
@@ -117,6 +121,47 @@ export function activityValues(activity: Activity[]) {
     row.day, row.install, row.firstDay, row.platform, row.build, row.milestones.join(","),
     row.choices ? JSON.stringify(row.choices) : "",
   ]);
+}
+
+/**
+ * The game sends a day again every few minutes while it changes, and each send is a new row. This folds every installation-day into one
+ * row: the earliest first day, every milestone (in the order they were reached, unknown ones kept), the newest choice snapshot and the
+ * latest platform and build. What `summarize` reads from the result is exactly what it read from the original. Rows that are not
+ * recognisable activity (typed by hand, written by an older site) are kept untouched; empty rows are dropped.
+ */
+export function compactRows(values: unknown[][], today: string): unknown[][] {
+  const out: unknown[][] = [];
+  const merged = new Map<string, { row: unknown[]; flags: string[]; revision: number }>();
+  for (const cells of values) {
+    if (!cells.some((cell) => cell !== "" && cell !== null && cell !== undefined)) continue;
+    const [day, install, first, platform, build, flags, choices] = cells;
+    const rawFlags = typeof flags === "string" && flags ? flags.split(",") : [];
+    const row = asActivity(install, first, platform, build, day, rawFlags, today);
+    if (!row) {
+      out.push(cells);
+      continue;
+    }
+    const key = row.install + ":" + row.day;
+    const revision = readChoices(choices)?.revision ?? 0;
+    const cell = typeof choices === "string" ? choices : "";
+    const entry = merged.get(key);
+    if (!entry) {
+      const kept = [row.day, row.install, row.firstDay, row.platform, row.build, "", cell];
+      merged.set(key, { row: kept, flags: [...new Set(rawFlags)], revision });
+      out.push(kept);
+      continue;
+    }
+    if (row.firstDay < String(entry.row[2])) entry.row[2] = row.firstDay;
+    entry.row[3] = row.platform;
+    entry.row[4] = row.build;
+    for (const flag of rawFlags) if (!entry.flags.includes(flag)) entry.flags.push(flag);
+    if (revision > entry.revision || (!entry.revision && !entry.row[6] && cell)) {
+      entry.row[6] = cell;
+      entry.revision = revision;
+    }
+  }
+  for (const { row, flags } of merged.values()) row[5] = flags.join(",");
+  return out;
 }
 
 export function summarize(values: unknown[][], today: string, historyDays: 14 | 90 = 14) {
