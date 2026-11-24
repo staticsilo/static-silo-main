@@ -4,171 +4,95 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { OPEN_FEEDBACK_EVENT } from "./feedback-form";
 
-const shots = [
-  {
-    src: "/game/bone-fields-falling-stars.webp",
-    title: "The Bone Fields",
-    caption: "Falling Stars rain fire on a horde crossing the bone-strewn plain.",
-  },
-  {
-    src: "/game/lantern-graveyard-bone-spirits.webp",
-    title: "The Lantern Graveyard",
-    caption: "Bone Spirits and Whirling Blades tear through the dead while the Gravekeeper waits.",
-  },
-  {
-    src: "/game/sun-tombs-plague-vials.webp",
-    title: "The Sun Tombs · Act II",
-    caption: "Plague Vials poison the sand among the tombs of the Dust Sea.",
-  },
-  {
-    src: "/game/ashwater-camp.webp",
-    title: "Ashwater Camp",
-    caption: "The last fire on the moor. Rest, trade, stash your loot, then cross the causeway.",
-  },
-  {
-    src: "/game/rotwood-gorecraft.webp",
-    title: "The Rotwood",
-    caption: "Gorecraft and the Crimson Scythe: corpses burst and blood is reaped back as life.",
-  },
-  {
-    src: "/game/rotwood-frost-orbs.webp",
-    title: "The Rotwood",
-    caption: "Frost Orbs chill a crowd until it shatters.",
-  },
-  {
-    src: "/game/drowned-marsh-arc-lightning.webp",
-    title: "The Drowned Marsh",
-    caption: "Arc Lightning chains from body to body through the rain.",
-  },
-  {
-    src: "/game/salt-pans-arrow-volley.webp",
-    title: "The Salt Pans · Act II",
-    caption: "An Arrow Volley sweeps the white flats.",
-  },
-  {
-    src: "/game/glass-flats-stormspears.webp",
-    title: "The Glass Flats · Act II",
-    caption: "Stormspears fly across the fused glass.",
-  },
-];
-
-// The camp, the loot and the trades between the fights.
-const systems = [
-  {
-    src: "/game/item-compare.webp",
-    title: "Ancient vs Legendary",
-    caption: "Every find is weighed against what you wear, roll by roll, with greater affixes and build bonuses.",
-  },
-  {
-    src: "/game/inventory.webp",
-    title: "Inventory",
-    caption: "Worn gear, a grid pack, charm slots and every bonus your gear adds up to.",
-  },
-  {
-    src: "/game/gambler.webp",
-    title: "Fenn the Gambler",
-    caption: "Pay for an item you cannot see. You learn what it is once it is bought.",
-  },
-  {
-    src: "/game/brinecoffer-runes.webp",
-    title: "The Brinecoffer · Runes",
-    caption: "Upgrade runes, set them into sockets, make runewords, or rebuild your hero for mastery.",
-  },
-  {
-    src: "/game/brinecoffer-forge.webp",
-    title: "The Brinecoffer · Forge",
-    caption: "Reforge a stat on your runeword with boss materials: Heartwood, Pearl, Ankh and Ember.",
-  },
-  {
-    src: "/game/character-sheet.webp",
-    title: "Character",
-    caption: "Strength, Dexterity, Vitality and Energy, with damage and resistances by element.",
-  },
-  {
-    src: "/game/blacksmith.webp",
-    title: "Hild the Blacksmith",
-    caption: "Plain and enchanted gear, a sell-junk button and buyback.",
-  },
-  {
-    src: "/game/stash.webp",
-    title: "The Stash",
-    caption: "Four shared tabs, kept for every hero you make.",
-  },
-];
-
 type GalleryShot = {
   src: string;
   title: string;
   caption: string;
-  portrait?: boolean;
   animation?: string;
+  portrait?: boolean;
 };
 
-const latestShots: GalleryShot[] = [
+const gallery: GalleryShot[] = [
   {
-    src: "/game/venomfrost-from-tree.webp",
-    animation: "/game/venomfrost-from-tree.gif",
-    title: "Build Venomfrost Barrage",
-    caption: "Pick Frost, then Plague, then Volley. Watch the revealed combo send a Frost Orb into the pack, spread venom, and rain down arrows.",
+    src: "/game/action-frost-plague-volley.webp",
+    animation: "/game/action-frost-plague-volley-loop.webp",
+    title: "Frost, Plague & Volley",
+    caption: "Dash to release Frost Orbs, land a hit to call Arrow Volley, and cover five meters to spill Plague Vials. When all three triggers are earned, the learned order takes over.",
   },
   {
-    src: "/game/talent-tree.webp",
-    animation: "/game/talent-tree-cold-wake.gif",
-    title: "One connected talent tree",
-    caption: "Pan and pinch to explore. Follow the lit path to Cold Wake, pick it, and see how its next rank improves the skill.",
+    src: "/game/action-earthbreaker.webp",
+    animation: "/game/action-earthbreaker-loop.webp",
+    title: "Plant your feet",
+    caption: "Move into range, stop for half a second in combat, then send Earthbreaker’s fissure through the advancing pack.",
+  },
+  {
+    src: "/game/action-counterstrike.webp",
+    animation: "/game/action-counterstrike-loop.webp",
+    title: "Evade and counter",
+    caption: "Step clear of a warned strike. Gravity Wells opens where you stood, and Blade Dance sends a crescent back toward the attacker.",
+  },
+  {
+    src: "/game/card-forge.webp",
     portrait: true,
+    animation: "/game/card-forge-loop.webp",
+    title: "Forge a level-up card",
+    caption: "Bank an offered card and combine it with a later deal. Forge a compatible pair in the held row to reveal a new card with both bonuses and drawbacks.",
   },
   {
-    src: "/game/level-up-cards.webp",
-    animation: "/game/level-up-sacrifice.gif",
-    title: "Level-up cards and Sacrifice",
-    caption: "Pick one of three bonuses or burn the whole hand to improve your next roll. Keep your talent point either way. At 100%, choose between Stolen Omen and Grave Tithe.",
-  },
-  {
-    src: "/game/venomfrost-barrage.webp",
-    animation: "/game/venomfrost-barrage.gif",
-    title: "Venomfrost Barrage",
-    caption: "Frost, Plague and Volley combine into a rain of venom-tipped arrows in the Rotwood.",
-  },
-  {
-    src: "/game/morvath-hellrain.webp",
-    animation: "/game/morvath-hellrain.gif",
-    title: "Dodging Hellrain",
-    caption: "Morvath marks the cathedral floor before Hellrain falls. Dash out as the impacts close in.",
-  },
-  {
-    src: "/game/charged-javelin.webp",
-    animation: "/game/charged-javelin.gif",
-    title: "Charged Javelin",
-    caption: "Lightning and Spears work together as the hero fights through the Drowned Marsh.",
-  },
-  {
-    src: "/game/cold-wake.webp",
-    title: "Cold Wake",
-    caption: "Dash through an ice trail to shatter enemies. Each rank shows what the next point changes.",
+    src: "/game/talent-triggers.webp",
     portrait: true,
+    title: "Find your next trigger",
+    caption: "Follow the lit route to a school and tap it to see what activates it and how it pairs with your first school.",
   },
   {
-    src: "/game/ordered-combo.webp",
-    title: "The order shapes your combo",
-    caption: "The tree tracks the order you learn schools and reveals the resulting ability.",
+    src: "/game/talent-learned-order.webp",
     portrait: true,
+    title: "Your picks decide the order",
+    caption: "The talent tree remembers your first three schools. Earn their triggers within five seconds to play the combo in that order.",
   },
   {
-    src: "/game/pinnacle-path.webp",
+    src: "/game/current-ashwater.webp",
+    title: "Ashwater Camp",
+    caption: "Return to the bonfire to talk, trade, and sort what you brought back.",
+  },
+  {
+    src: "/game/talent-ranked-mastery.webp",
+    portrait: true,
+    title: "Ranked mastery",
+    caption: "See what the next point changes before you spend it.",
+  },
+  {
+    src: "/game/current-inventory.webp",
+    title: "The pack",
+    caption: "Compare the gear you carried out of the Maw and equip the pieces that fit your build.",
+  },
+  {
+    src: "/game/current-blacksmith.webp",
+    title: "Trade at the camp",
+    caption: "Buy gear, sell spare finds, and recover a recent sale through buyback.",
+  },
+  {
+    src: "/game/current-brinecoffer.webp",
+    title: "The Brinecoffer",
+    caption: "Use runes and materials to craft and rework equipment.",
+  },
+  {
+    src: "/game/current-character.webp",
+    title: "The character sheet",
+    caption: "Spend attributes and check your damage, defenses, and resistances.",
+  },
+  {
+    src: "/game/current-stash.webp",
+    title: "The shared stash",
+    caption: "Keep discoveries for your other heroes in four shared tabs.",
+  },
+  {
+    src: "/game/talent-pinnacle.webp",
+    portrait: true,
     title: "The Pinnacle path",
     caption: "After Morvath falls, five choices from levels 96–100 deepen your build.",
-    portrait: true,
-  },
-  {
-    src: "/game/morvath-duel.webp",
-    title: "Morvath, the Undying King",
-    caption: "A scythe-wielding hero closes in as Morvath brings his throne room to life.",
   },
 ];
-
-// Fights and systems interleaved, so the gallery alternates action and depth.
-const gallery: GalleryShot[] = [...latestShots, ...shots.flatMap((s, i) => (systems[i] ? [s, systems[i]] : [s]))];
 
 function Gallery() {
   const [index, setIndex] = useState(0);
@@ -334,7 +258,12 @@ const features = [
   {
     title: "Build from the Crossroads",
     description:
-      "Explore 19 schools on one talent map. Your first three schools shape an ordered attack, and ranked mastery lets you deepen your choices. Level-up cards add smaller bonuses along the way.",
+      "Explore 19 schools on one talent map. Attacks, dashes, movement, bracing, evasion, and breaking marks activate different schools. Learn up to three and earn their triggers within five seconds to unleash your combo in learned order.",
+  },
+  {
+    title: "Make the deal yours",
+    description:
+      "Choose from three rolled cards at level-up. Keep a card for a later deal, combine it with a compatible offer, or sacrifice cards to amplify a future roll. Every card has a gain and a drawback.",
   },
   {
     title: "Loot worth the dark",
