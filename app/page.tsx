@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import Image from "next/image";
 import FeedbackDialog from "./feedback-form";
 import GameDetails from "./game-details";
@@ -397,6 +398,7 @@ export default function Home() {
           <p>Independent Games</p>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 }

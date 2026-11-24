@@ -10,6 +10,7 @@
     "test:stats": "tsc app/maw-stats-model.ts --outDir .stats-test --module commonjs --target es2022 --resolveJsonModule --esModuleInterop --skipLibCheck && node tests/maw-stats.check.cjs"
   },
   "dependencies": {
+    "@vercel/analytics": "2.0.1",
     "google-auth-library": "^10.9.1",
     "next": "16.2.7",
     "react": "19.2.4",
