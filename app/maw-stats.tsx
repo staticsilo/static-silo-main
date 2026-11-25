@@ -156,9 +156,13 @@ export default function MawStats({ configured }: { configured: boolean }) {
     { label: "Day 1 retention", value: rate(stats.day1), note: number.format(stats.day1.returned) + " of " + number.format(stats.day1.eligible) + " eligible · all time" },
     { label: "Day 7 retention", value: rate(stats.day7), note: number.format(stats.day7.returned) + " of " + number.format(stats.day7.eligible) + " eligible · all time" },
   ];
+  const platformCount = (p: keyof StatsSummary["platforms"]) => stats.platforms?.[p] ?? 0;
   const platforms = [
-    { label: "Windows", count: stats.windows, color: orange },
-    { label: "Android", count: stats.android, color: mint },
+    { label: "Windows", count: platformCount("windows"), color: orange },
+    { label: "Android app", count: platformCount("android"), color: mint },
+    { label: "Browser on Android", count: platformCount("web-android"), color: mint },
+    { label: "Browser on iPhone/iPad", count: platformCount("web-ios"), color: mint },
+    { label: "Browser on a computer", count: platformCount("web-desktop"), color: orange },
   ];
   const milestones = [
     { label: "Completed the intro", count: stats.intro, color: orange },

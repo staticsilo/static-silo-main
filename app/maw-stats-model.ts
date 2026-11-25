@@ -9,7 +9,10 @@ const milestones = [
 ] as const;
 
 type Milestone = (typeof milestones)[number];
-type Platform = "windows" | "android";
+// Where an installation plays: the two native builds, and the browser demo by the device its browser is on.
+export const PLATFORMS = ["windows", "android", "web-android", "web-ios", "web-desktop"] as const;
+export type Platform = (typeof PLATFORMS)[number];
+const knownPlatform = (value: unknown): value is Platform => typeof value === "string" && (PLATFORMS as readonly string[]).includes(value);
 type Activity = {
   day: string;
   install: string;
@@ -36,8 +39,8 @@ export type StatsSummary = {
   activeSevenDays: number;
   day1: Retention;
   day7: Retention;
-  windows: number;
-  android: number;
+  /** All-time installations on each platform. */
+  platforms: Record<Platform, number>;
   intro: number;
   levelUp: number;
   boss: number;
@@ -86,7 +89,7 @@ function asActivity(
 ): Activity | null {
   const known = milestoneList(flags);
   if (typeof install !== "string" || !/^[0-9a-f]{32}$/i.test(install) ||
-    (platform !== "windows" && platform !== "android") ||
+    !knownPlatform(platform) ||
     typeof build !== "string" || !/^[0-9A-Za-z._-]{1,24}$/.test(build) ||
     !dateString(firstDay) || !dateString(day) || day > today || !known) {
     return null;
@@ -219,7 +222,7 @@ export function summarize(values: unknown[][], today: string, historyDays: 14 | 
   const totals: StatsSummary = {
     date: today, installs: people.size, activeToday: 0, activeSevenDays: 0,
     day1: { returned: 0, eligible: 0 }, day7: { returned: 0, eligible: 0 },
-    windows: 0, android: 0, intro: 0, levelUp: 0, boss: 0, pick: 0, sacrifice: 0, daily: [],
+    platforms: Object.fromEntries(PLATFORMS.map((p) => [p, 0])) as Record<Platform, number>, intro: 0, levelUp: 0, boss: 0, pick: 0, sacrifice: 0, daily: [],
     choices: summarizeChoices(latestChoices.values()),
     installations: [...people].map(([id, history]) => ({
       id, first: history.first, platform: history.platform, days: history.days.size,
@@ -239,7 +242,7 @@ export function summarize(values: unknown[][], today: string, historyDays: 14 | 
 
   const weekStart = dayAt(today, -6);
   for (const history of people.values()) {
-    totals[history.platform] += 1;
+    totals.platforms[history.platform] += 1;
     if (history.days.has(today)) totals.activeToday += 1;
     if ([...history.days].some((day) => day >= weekStart)) totals.activeSevenDays += 1;
     if (history.milestones.has("intro_completed")) totals.intro += 1;

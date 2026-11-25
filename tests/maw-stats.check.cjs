@@ -55,6 +55,12 @@ check("a day after today is refused", m.parseActivity(body({}, { date: "2026-11-
   check("an unknown milestone is ignored, not a refusal", rows && rows[0].milestones.join() === "intro_completed");
 }
 check("an unknown platform is refused", m.parseActivity(body({ platform: "macos" }), today) === null);
+for (const p of ["web-android", "web-ios", "web-desktop"]) check(`the browser demo's platform "${p}" is accepted`, m.parseActivity(body({ platform: p }), today) !== null);
+{
+  const rows = [[ "2026-11-15", id(41), "2026-11-15", "web-ios", "0.1-playtest", "", "" ], [ "2026-11-15", id(42), "2026-11-15", "windows", "0.1-playtest", "", "" ]];
+  const t = m.summarize(rows, today).totals;
+  check("the dashboard counts each platform", t.platforms["web-ios"] === 1 && t.platforms.windows === 1 && t.platforms["web-android"] === 0, JSON.stringify(t.platforms));
+}
 check("more than 24 days is refused", m.parseActivity(body({ days: Array(25).fill({ date: "2026-11-15" }) }), today) === null);
 
 // --- Choice keys the game sends

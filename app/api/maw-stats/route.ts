@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     return Response.json({ message: "The private dashboard is awaiting setup." }, { status: 503, headers: privateHeaders });
   }
   if (!checkCode(request, code)) {
-    return Response.json({ message: "That access code didn’t match." }, { status: 401, headers: privateHeaders });
+    return Response.json({ message: "That access code didnâ€™t match." }, { status: 401, headers: privateHeaders });
   }
 
   try {
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 export async function DELETE(request: Request) {
   const code = process.env.MAW_STATS_DASHBOARD_CODE ?? "";
   if (!statsConfigured() || code.length < 32) return Response.json({ message: "The private dashboard is awaiting setup." }, { status: 503, headers: privateHeaders });
-  if (!checkCode(request, code)) return Response.json({ message: "That access code didn’t match." }, { status: 401, headers: privateHeaders });
+  if (!checkCode(request, code)) return Response.json({ message: "That access code didnâ€™t match." }, { status: 401, headers: privateHeaders });
 
   let body: { ids?: unknown; firstDay?: unknown };
   try {
@@ -79,12 +79,37 @@ export async function DELETE(request: Request) {
   }
 }
 
+// The browser demo is served from itch.io and posts here: a cross-site request. Only this upload route answers it; the dashboard (GET) and the
+// owner's DELETE send no CORS headers, so no other site's script can call them from a visitor's browser. No credentials are ever involved.
+const uploadCors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
+
+export function OPTIONS() {
+  return new Response(null, { status: 204, headers: uploadCors });
+}
+
 export async function POST(request: Request) {
+  const answer = await receiveUpload(request);
+  const headers = new Headers(answer.headers);
+  for (const [name, value] of Object.entries(uploadCors)) headers.set(name, value);
+  return new Response(answer.body, { status: answer.status, headers });
+}
+
+// Desktop and Android builds send application/json; a browser build sends text/plain (still JSON), which crosses sites without a preflight, and
+// a closing tab's sendBeacon can only send that.
+function uploadType(request: Request) {
+  const type = request.headers.get("content-type")?.toLowerCase() ?? "";
+  return type.startsWith("application/json") || type.startsWith("text/plain");
+}
+
+async function receiveUpload(request: Request) {
   if (!statsConfigured()) return new Response(null, { status: 503 });
   if (overLimit(request)) return new Response(null, { status: 429, headers: { "Retry-After": "600" } });
-  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
-    return new Response(null, { status: 415 });
-  }
+  if (!uploadType(request)) return new Response(null, { status: 415 });
 
   const maxBytes = 32_768;
   if (Number(request.headers.get("content-length")) > maxBytes) return new Response(null, { status: 413 });
@@ -120,6 +145,11 @@ export async function POST(request: Request) {
 
   try {
     await appendActivity(activityValues(rows));
+    // A browser build's HTTP client (Godot on the web) reports a body-less 204 as no response at all, so its uploads (text/plain) are answered
+    // 200 with a two-byte body. The desktop and Android builds send JSON and keep getting the 204 they check for.
+    if (request.headers.get("content-type")?.toLowerCase().startsWith("text/plain")) {
+      return new Response("ok", { status: 200, headers: { "Content-Type": "text/plain" } });
+    }
     return new Response(null, { status: 204 });
   } catch (error) {
     if (upstreamLimited(error)) return new Response(null, { status: 429, headers: { "Retry-After": "60" } });
